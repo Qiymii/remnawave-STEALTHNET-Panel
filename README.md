@@ -25,7 +25,7 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/yourusername/stealthnet-admin-panel.git
+git clone https://github.com/GOFONCK/stealthnet-admin-panel.git
 cd stealthnet-admin-panel
 ```
 

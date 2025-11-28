@@ -14,15 +14,21 @@
 ### 1. Подготовка
 
 ```bash
-# Клонируйте или скопируйте проект
-cd "Готовый проект"
+# Клонируйте репозиторий в любую директорию (например, /opt/)
+git clone https://github.com/yourusername/stealthnet-vpn.git /opt/stealthnet
+cd /opt/stealthnet
+
+# Или если уже склонировали в другую директорию
+cd /path/to/your/project
 
 # Создайте файл .env на основе .env.example
-cp .env.example .env
+cp env.example .env
 
 # Отредактируйте .env и заполните все необходимые переменные
 nano .env
 ```
+
+**Примечание:** Все пути в `docker-compose.yml` относительные, поэтому проект будет работать из любой директории (`/opt/`, `/home/user/`, `/var/www/` и т.д.).
 
 ### 2. Создание необходимых директорий
 

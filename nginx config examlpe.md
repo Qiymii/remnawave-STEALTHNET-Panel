@@ -3,11 +3,10 @@
 
 ---
 
-#
+
 server {
 
     server_name panel.stealthnet.app; # ❗️ ВАШ IP-АДРЕС СЮДА
-
 
 
     # --- 1. ОБРАБОТКА БЭКЕНДА ---
@@ -89,6 +88,7 @@ server {
 
 
 }
+
 
 
 

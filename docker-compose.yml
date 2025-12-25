@@ -15,6 +15,7 @@ services:
       - ./cache:/app/cache
       - ./logs:/app/logs
       - ./.env:/app/.env
+      - ./frontend/build:/app/frontend/build:ro
     working_dir: /app
     environment:
       - FLASK_ENV=production
@@ -63,4 +64,5 @@ services:
 networks:
   stealthnet-network:
     driver: bridge
+
 

@@ -204,7 +204,8 @@ Telegram бот для клиентов с полным функционалом
    ```bash
    cd /opt
    git clone https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git
-   cd STEALTHNET-Admin-Panel
+   cd remnawave-STEALTHNET-Panel
+
    ```
 
 3. **Настройте переменные окружения**:
@@ -343,7 +344,7 @@ chmod +x generate_keys.sh
 ## 🔄 Обновление проекта
 
 ```bash
-cd /opt/STEALTHNET-Admin-Panel
+cd /opt/remnawave-STEALTHNET-Panel
 git pull  # Обновляем код из GitHub
 docker compose down
 docker compose build --no-cache

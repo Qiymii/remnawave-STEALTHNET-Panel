@@ -337,8 +337,8 @@ sudo certbot certonly --standalone -d panel.stealthnet.app --email your@email.co
 
 # Копируем сертификаты в директорию проекта
 mkdir -p /opt/STEALTHNET-Admin-Panel/nginx/ssl
-cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/STEALTHNET-Admin-Panel/nginx/ssl/
-cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/STEALTHNET-Admin-Panel/nginx/ssl/
+cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
+cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
 ```
 
 ### Вариант 2: Самоподписанный сертификат (для тестирования)
@@ -797,6 +797,7 @@ docker compose logs -f
 ---
 
 **Удачной установки!** 🚀
+
 
 
 

@@ -79,7 +79,7 @@ git clone https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git
 cd remnawave-STEALTHNET-Panel
 
 # Или если копируете файлы вручную:
-# mkdir -p /opt/STEALTHNET-Admin-Panel
+# mkdir -p /opt/remnawave-STEALTHNET-Panel
 # cd /opt/remnawave-STEALTHNET-Panel
 # Скопируйте все файлы из папки "Готовый проект" сюда
 ```
@@ -91,8 +91,8 @@ cd remnawave-STEALTHNET-Panel
 mkdir -p instance cache logs nginx/ssl frontend/build
 
 # Если используете не root пользователя, установите права:
-# sudo chown -R $USER:$USER /opt/STEALTHNET-Admin-Panel
-# chmod -R 755 /opt/STEALTHNET-Admin-Panel
+# sudo chown -R $USER:$USER /opt/remnawave-STEALTHNET-Panel
+# chmod -R 755 /opt/remnawave-STEALTHNET-Panel
 ```
 
 ---
@@ -213,17 +213,17 @@ CRYSTALPAY_API_SECRET=ваш_api_secret
 
 ### Копируем файлы проекта
 
-Проект должен быть клонирован из GitHub в `/opt/STEALTHNET-Admin-Panel`:
+Проект должен быть клонирован из GitHub в `/opt/remnawave-STEALTHNET-Panel`:
 
 ```bash
 # Если еще не клонировали, выполните:
 cd /opt
-sudo git clone https://github.com/GOFONCK/STEALTHNET-Admin-Panel.git
+sudo git clone https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git
 cd remnawave-STEALTHNET-Panel
-sudo chown -R $USER:$USER /opt/STEALTHNET-Admin-Panel
+sudo chown -R $USER:$USER /opt/remnawave-STEALTHNET-Panel
 
 # Структура должна быть такой:
-/opt/STEALTHNET-Admin-Panel/
+/opt/remnawave-STEALTHNET-Panel/
 ├── app.py
 ├── client_bot.py
 ├── requirements.txt
@@ -261,7 +261,7 @@ sudo chown -R $USER:$USER /opt/STEALTHNET-Admin-Panel
 
 ```bash
 # Проверяем, что frontend/build уже есть в проекте:
-ls -la /opt/STEALTHNET-Admin-Panel/frontend/build/
+ls -la /opt/remnawave-STEALTHNET-Panel/frontend/build/
 
 # Должны быть файлы:
 # - index.html
@@ -279,7 +279,7 @@ ls -la /opt/STEALTHNET-Admin-Panel/frontend/build/
 ### Редактируем конфигурацию Nginx
 
 ```bash
-nano /opt/STEALTHNET-Admin-Panel/nginx/nginx.conf
+nano /opt/remnawave-STEALTHNET-Panel/nginx/nginx.conf
 ```
 
 Замените `server_name _;` на ваш домен или IP:
@@ -294,7 +294,7 @@ server_name panel.stealthnet.app;  # или ваш IP адрес
 
 1. **Обновите `nginx/nginx.conf`**:
    ```bash
-   nano /opt/STEALTHNET-Admin-Panel/nginx/nginx.conf
+   nano /opt/remnawave-STEALTHNET-Panel/nginx/nginx.conf
    ```
    
    Раскомментируйте блок с HTTPS и укажите правильный `server_name`:
@@ -311,8 +311,8 @@ server_name panel.stealthnet.app;  # или ваш IP адрес
 
 2. **Скопируйте сертификаты** в директорию проекта:
    ```bash
-   cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/STEALTHNET-Admin-Panel/nginx/ssl/
-   cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/STEALTHNET-Admin-Panel/nginx/ssl/
+   cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
+   cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
    ```
 
 3. **Перезапустите Nginx**:
@@ -336,7 +336,7 @@ sudo yum install -y certbot python3-certbot-nginx  # для CentOS
 sudo certbot certonly --standalone -d panel.stealthnet.app --email your@email.com --agree-tos
 
 # Копируем сертификаты в директорию проекта
-mkdir -p /opt/STEALTHNET-Admin-Panel/nginx/ssl
+mkdir -p /opt/remnawave-STEALTHNET-Panel/nginx/ssl
 cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
 cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
 ```
@@ -345,10 +345,10 @@ cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTH
 
 ```bash
 # Создаем самоподписанный сертификат
-mkdir -p /opt/STEALTHNET-Admin-Panel/nginx/ssl
+mkdir -p /opt/remnawave-STEALTHNET-Panel/nginx/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /opt/STEALTHNET-Admin-Panel/nginx/ssl/privkey.pem \
-  -out /opt/STEALTHNET-Admin-Panel/nginx/ssl/fullchain.pem
+  -keyout /opt/remnawave-STEALTHNET-Panel/nginx/ssl/privkey.pem \
+  -out /opt/remnawave-STEALTHNET-Panel/nginx/ssl/fullchain.pem
 ```
 
 После получения сертификата обновите `nginx/nginx.conf` (раскомментируйте HTTPS блок).
@@ -634,7 +634,7 @@ sudo nano /etc/cron.monthly/renew-ssl.sh
 # Содержимое скрипта:
 #!/bin/bash
 certbot renew --quiet
-docker compose -f /opt/STEALTHNET-Admin-Panel/docker-compose.yml restart nginx
+docker compose -f /opt/remnawave-STEALTHNET-Panel/docker-compose.yml restart nginx
 
 # Делаем скрипт исполняемым
 sudo chmod +x /etc/cron.monthly/renew-ssl.sh
@@ -644,7 +644,7 @@ sudo chmod +x /etc/cron.monthly/renew-ssl.sh
 
 ```bash
 # Устанавливаем мониторинг логов
-docker compose logs -f --tail=100 > /opt/STEALTHNET-Admin-Panel/logs/stealthnet.log 2>&1 &
+docker compose logs -f --tail=100 > /opt/remnawave-STEALTHNET-Panel/logs/stealthnet.log 2>&1 &
 
 # Или используйте systemd для автозапуска
 sudo nano /etc/systemd/system/stealthnet.service
@@ -656,7 +656,7 @@ sudo nano /etc/systemd/system/stealthnet.service
 
 - [ ] Docker и Docker Compose установлены
 - [ ] Файл `.env` заполнен всеми необходимыми переменными
-- [ ] Проект клонирован в `/opt/STEALTHNET-Admin-Panel`
+- [ ] Проект клонирован в `/opt/remnawave-STEALTHNET-Panel`
 - [ ] Frontend build скопирован в `frontend/build/`
 - [ ] База данных создана автоматически при запуске (проверьте `instance/stealthnet.db`)
 - [ ] Контейнеры запущены и работают
@@ -722,7 +722,7 @@ docker compose logs -f
 ## 📦 Структура файлов после установки
 
 ```
-/opt/STEALTHNET-Admin-Panel/
+/opt/remnawave-STEALTHNET-Panel/
 ├── app.py                          # Flask API
 ├── client_bot.py                   # Telegram бот
 ├── requirements.txt                # Зависимости API
@@ -797,6 +797,7 @@ docker compose logs -f
 ---
 
 **Удачной установки!** 🚀
+
 
 
 

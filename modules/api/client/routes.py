@@ -884,11 +884,9 @@ def create_payment():
                 if not crystalpay_key or crystalpay_key == "DECRYPTION_ERROR" or not crystalpay_secret or crystalpay_secret == "DECRYPTION_ERROR":
                     return jsonify({"message": "CrystalPay не настроен"}), 500
                 
-                # Определяем источник: если есть telegram_id, значит из бота
+                # Эндпоинт /api/client/create-payment используется только с сайта
                 from modules.api.payments.base import get_return_url
-                source = 'miniapp' if user.telegram_id else 'website'
-                miniapp_type = 'v1' if user.telegram_id else 'v2'  # Старый бот использует v1
-                redirect_url = get_return_url(source=source, miniapp_type=miniapp_type)
+                redirect_url = get_return_url(source='website')
                 
                 payload = {
                     "auth_login": crystalpay_key,
@@ -927,11 +925,9 @@ def create_payment():
                     heleket_currency = "USD"
                     to_currency = "USDT"
                 
-                # Определяем источник: если есть telegram_id, значит из бота
+                # Эндпоинт /api/client/create-payment используется только с сайта
                 from modules.api.payments.base import get_return_url
-                source = 'miniapp' if user.telegram_id else 'website'
-                miniapp_type = 'v1' if user.telegram_id else 'v2'  # Старый бот использует v1
-                redirect_url = get_return_url(source=source, miniapp_type=miniapp_type)
+                redirect_url = get_return_url(source='website')
                 
                 payload = {
                     "amount": f"{float(amount):.2f}",
@@ -1304,11 +1300,9 @@ def create_payment():
                 if not crystalpay_key or crystalpay_key == "DECRYPTION_ERROR" or not crystalpay_secret or crystalpay_secret == "DECRYPTION_ERROR":
                     return jsonify({"message": "CrystalPay не настроен"}), 500
                 
-                # Определяем источник: если есть telegram_id, значит из бота
+                # Эндпоинт /api/client/create-payment используется только с сайта
                 from modules.api.payments.base import get_return_url
-                source = 'miniapp' if user.telegram_id else 'website'
-                miniapp_type = 'v1' if user.telegram_id else 'v2'  # Старый бот использует v1
-                redirect_url = get_return_url(source=source, miniapp_type=miniapp_type)
+                redirect_url = get_return_url(source='website')
                 
                 payload = {
                     "auth_login": crystalpay_key,
@@ -1536,7 +1530,7 @@ def create_payment():
                         "destination": f"Подписка StealthNET - {t.name}",
                         "comment": f"Подписка на {t.duration_days} дней"
                     },
-                    "redirectUrl": get_return_url(source='miniapp' if user.telegram_id else 'website', miniapp_type='v1' if user.telegram_id else 'v2'),
+                    "redirectUrl": get_return_url(source='website'),
                     "webHookUrl": f"{YOUR_SERVER_IP_OR_DOMAIN}/api/webhook/monobank",
                     "validity": 3600,
                     "paymentType": "debit"
@@ -1887,7 +1881,7 @@ def create_payment():
                 }
                 
                 checkout_options = {
-                    "redirectURL": get_return_url(source='miniapp' if user.telegram_id else 'website', miniapp_type='v1' if user.telegram_id else 'v2')
+                    "redirectURL": get_return_url(source='website')
                 }
                 
                 payload = {
@@ -1979,11 +1973,9 @@ def create_payment():
                 if not crystalpay_key or not crystalpay_secret or crystalpay_key == "DECRYPTION_ERROR" or crystalpay_secret == "DECRYPTION_ERROR":
                     return jsonify({"message": "CrystalPay credentials not configured"}), 500
                 
-                # Определяем источник: если есть telegram_id, значит из бота
+                # Эндпоинт /api/client/create-payment используется только с сайта
                 from modules.api.payments.base import get_return_url
-                source = 'miniapp' if user.telegram_id else 'website'
-                miniapp_type = 'v1' if user.telegram_id else 'v2'  # Старый бот использует v1
-                redirect_url = get_return_url(source=source, miniapp_type=miniapp_type)
+                redirect_url = get_return_url(source='website')
                 
                 payload = {
                     "auth_login": crystalpay_key,

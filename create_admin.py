@@ -37,6 +37,16 @@ def create_admin(email, password):
             print(f"✅ Пользователь {email} обновлен и назначен администратором")
         else:
             # Создаем нового пользователя
+            # Синхронизируем sequence для user.id, если нужно
+            try:
+                from sqlalchemy import text
+                max_id_result = db.session.execute(text('SELECT MAX(id) FROM "user"')).scalar()
+                if max_id_result:
+                    db.session.execute(text(f'SELECT setval(\'user_id_seq\', {max_id_result})'))
+                    db.session.commit()
+            except Exception as e:
+                print(f"⚠️  Предупреждение при синхронизации sequence: {e}")
+            
             password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
             new_user = User(
                 email=email,

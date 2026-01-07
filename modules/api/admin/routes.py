@@ -1120,9 +1120,16 @@ def admin_branding_settings(current_admin):
             'subscription_trial_text', 'balance_label_text', 'referral_code_label_text'
         ]
         
+        # Булевые поля, которые не должны быть None
+        boolean_fields = {'quick_download_enabled'}
+        
         for key in fields:
             if key in data:
-                setattr(b, key, data[key] if data[key] else None)
+                # Для булевых полей сохраняем значение как есть (включая False)
+                if key in boolean_fields:
+                    setattr(b, key, bool(data[key]) if data[key] is not None else True)
+                else:
+                    setattr(b, key, data[key] if data[key] else None)
         
         # Обработка JSON поля для названий функций тарифов
         if 'tariff_features_names' in data:

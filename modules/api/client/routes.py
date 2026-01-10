@@ -138,7 +138,8 @@ def get_client_referrals_info():
         ref_settings = get_referral_settings()
         referral_type = getattr(ref_settings, 'referral_type', 'DAYS') if ref_settings else 'DAYS'
         default_referral_percent = getattr(ref_settings, 'default_referral_percent', 10.0) if ref_settings else 10.0
-        user_referral_percent = user.referral_percent if user.referral_percent else default_referral_percent
+        # Если у пользователя установлен индивидуальный процент - используем его, иначе глобальный
+        user_referral_percent = user.referral_percent if user.referral_percent is not None else default_referral_percent
         
         # Информация в зависимости от типа системы
         referral_info = {}
@@ -377,7 +378,7 @@ def activate_trial():
 
         headers, cookies = get_remnawave_headers()
         requests.patch(f"{os.getenv('API_URL')}/api/users", headers=headers, cookies=cookies,
-                    json={"uuid": user.remnawave_uuid, "expireAt": new_exp, "activeInternalSquads": [trial_squad_id]})
+                    json={"uuid": user.remnawave_uuid, "expireAt": new_exp, "activeInternalSquads": [trial_squad_id], "hwidDeviceLimit": 3})
         
         cache.delete(f'live_data_{user.remnawave_uuid}')
         cache.delete('all_live_users_map')
@@ -792,8 +793,8 @@ def purchase_with_balance():
         if t.traffic_limit_bytes and t.traffic_limit_bytes > 0:
             patch_payload["trafficLimitBytes"] = t.traffic_limit_bytes
             patch_payload["trafficLimitStrategy"] = "NO_RESET"
-            
-             # Устанавливаем лимит устройств, если он указан в тарифе
+        
+        # Устанавливаем лимит устройств, если он указан в тарифе
         if hasattr(t, 'hwid_device_limit') and t.hwid_device_limit is not None and t.hwid_device_limit > 0:
             patch_payload["hwidDeviceLimit"] = t.hwid_device_limit
         
@@ -818,6 +819,7 @@ def purchase_with_balance():
             status='PAID',
             amount=final_amount,
             currency=info['c'],
+            payment_provider='balance',
             promo_code_id=promo_code_obj.id if promo_code_obj else None
         )
         db.session.add(new_p)

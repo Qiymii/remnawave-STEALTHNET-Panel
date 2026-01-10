@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2481cc">
+    <meta name="theme-color" content="#0a0a0f">
     <title>StealthNET</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,123 +18,139 @@
         }
 
         :root {
-            --tg-theme-bg-color: #ffffff;
-            --tg-theme-text-color: #1a1a2e;
+            --tg-theme-bg-color: #fafbfc;
+            --tg-theme-text-color: #0f0f12;
             --tg-theme-hint-color: #6b7280;
-            --tg-theme-link-color: #3f69ff;
-            --tg-theme-button-color: #3f69ff;
+            --tg-theme-link-color: #6366f1;
+            --tg-theme-button-color: #6366f1;
             --tg-theme-button-text-color: #ffffff;
-            --tg-theme-secondary-bg-color: #f8fafc;
+            --tg-theme-secondary-bg-color: #f3f4f6;
             
-            --primary: #3f69ff;
-            --primary-rgb: 63, 105, 255;
-            --primary-glow: rgba(63, 105, 255, 0.4);
-            --primary-dark: #2a58f0;
-            --primary-hover: #2a58f0;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
+            --primary: #6366f1;
+            --primary-rgb: 99, 102, 241;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --primary-dark: #4f46e5;
+            --primary-hover: #818cf8;
+            --secondary: #a855f7;
+            --accent: #06b6d4;
+            --accent-purple: #a855f7;
             
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
+            --text-primary: #0f0f12;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
             
-            --bg-primary: #f8fafc;
-            --bg-secondary: #eef2ff;
-            --body-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 35%, #e0e7ff 100%);
+            --bg-primary: #fafbfc;
+            --bg-secondary: #f3f4f6;
+            --bg-tertiary: #e5e7eb;
+            --body-bg: linear-gradient(160deg, #fafbfc 0%, #f0f1ff 50%, #e8f4ff 100%);
             
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(15, 23, 42, 0.08);
-            --glass-blur: saturate(180%) blur(18px);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.06);
+            --glass-blur: saturate(180%) blur(20px);
             --bg-glass: var(--glass-bg);
             
             --border-color: var(--glass-border);
-            --border-glow: rgba(63, 105, 255, 0.3);
+            --border-glow: rgba(99, 102, 241, 0.4);
             
-            --shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
             
-            --radius: 12px;
+            --radius-sm: 10px;
+            --radius: 16px;
             --radius-lg: 24px;
+            --radius-xl: 32px;
             
-            --success: #22c55e;
-            --accent-green: #22c55e;
+            --success: #10b981;
+            --accent-green: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --accent-red: #ef4444;
-            --accent-orange: #fb923c;
+            --accent-orange: #f97316;
             
-            --surface-muted: rgba(15, 23, 42, 0.04);
-            --surface-strong: rgba(63, 105, 255, 0.12);
-            --gradient-primary: radial-gradient(circle at 15% 20%, rgba(63, 105, 255, 0.25), transparent 55%);
+            --surface-muted: rgba(0, 0, 0, 0.03);
+            --surface-strong: rgba(99, 102, 241, 0.08);
+            --gradient-primary: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+            --gradient-card: linear-gradient(145deg, rgba(99, 102, 241, 0.06) 0%, rgba(6, 182, 212, 0.04) 100%);
         }
 
         :root[data-theme="dark"] {
             color-scheme: dark;
-            --tg-theme-bg-color: #050816;
-            --tg-theme-text-color: #e2e8f0;
+            --tg-theme-bg-color: #0a0a0f;
+            --tg-theme-text-color: #f1f5f9;
             --tg-theme-hint-color: #94a3b8;
-            --tg-theme-link-color: #6c7bff;
-            --tg-theme-button-color: #6c7bff;
-            --tg-theme-button-text-color: #0a0e1a;
-            --tg-theme-secondary-bg-color: rgba(15, 23, 42, 0.6);
+            --tg-theme-link-color: #818cf8;
+            --tg-theme-button-color: #6366f1;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #12121a;
             
-            --primary: #6c7bff;
-            --primary-rgb: 108, 123, 255;
-            --primary-glow: rgba(108, 123, 255, 0.6);
-            --primary-dark: #5a6aff;
-            --primary-hover: #8b9dff;
-            --secondary: #a855f7;
-            --accent: #ff00ff;
+            --primary: #818cf8;
+            --primary-rgb: 129, 140, 248;
+            --primary-glow: rgba(129, 140, 248, 0.4);
+            --primary-dark: #6366f1;
+            --primary-hover: #a5b4fc;
+            --secondary: #c084fc;
+            --accent: #22d3ee;
+            --accent-purple: #c084fc;
             
-            --text-primary: #e2e8f0;
+            --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
+            --text-muted: #64748b;
             
-            --bg-primary: #050816;
-            --bg-secondary: #0f172a;
-            --body-bg: radial-gradient(circle at 20% 20%, rgba(63, 105, 255, 0.25), transparent 45%), #050816;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --body-bg: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(168, 85, 247, 0.08), transparent),
+                #0a0a0f;
             
-            --glass-bg: rgba(11, 15, 25, 0.92);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: saturate(180%) blur(18px);
+            --glass-bg: rgba(18, 18, 26, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-blur: saturate(180%) blur(20px);
             --bg-glass: var(--glass-bg);
             
             --border-color: var(--glass-border);
-            --border-glow: rgba(108, 123, 255, 0.3);
+            --border-glow: rgba(129, 140, 248, 0.3);
             
-            --shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-            --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 60px rgba(129, 140, 248, 0.2);
             
-            --success: #4ade80;
-            --accent-green: #4ade80;
-            --warning: #facc15;
+            --success: #34d399;
+            --accent-green: #34d399;
+            --warning: #fbbf24;
             --danger: #f87171;
             --accent-red: #f87171;
             --accent-orange: #fb923c;
             
-            --surface-muted: rgba(255, 255, 255, 0.05);
-            --surface-strong: rgba(108, 99, 255, 0.15);
-            --gradient-primary: radial-gradient(circle at 20% 15%, rgba(108, 99, 255, 0.35), transparent 60%);
+            --surface-muted: rgba(255, 255, 255, 0.03);
+            --surface-strong: rgba(129, 140, 248, 0.12);
+            --gradient-primary: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(192, 132, 252, 0.1) 100%);
+            --gradient-card: linear-gradient(145deg, rgba(129, 140, 248, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--body-bg);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
             line-height: 1.6;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background 0.4s ease, color 0.3s ease;
             background-attachment: fixed;
+            letter-spacing: -0.01em;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
-            padding: 16px;
-            padding-bottom: 100px;
+            padding: 20px 16px;
+            padding-bottom: 110px;
             position: relative;
             z-index: 1;
         }
@@ -141,62 +160,115 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 60vh;
-            gap: 20px;
+            min-height: 70vh;
+            gap: 24px;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--surface-muted);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3); }
+            50% { box-shadow: 0 0 40px rgba(var(--primary-rgb), 0.5); }
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-xl { width: 28px; height: 28px; }
+
+        .icon-filled {
+            fill: currentColor;
+            stroke: none;
+        }
+
+        /* Cards */
         .card {
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            padding: 28px;
+            padding: 24px;
             margin-bottom: 16px;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            animation: fadeIn 0.4s ease;
         }
 
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(var(--primary-rgb), 0.15);
+        }
+        
+        .card-hero {
+            position: relative;
+            overflow: hidden;
+            background: var(--gradient-card);
+            border: 1px solid rgba(var(--primary-rgb), 0.15);
+        }
+        
+        .card-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(var(--primary-rgb), 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .card-hero > * {
+            position: relative;
+            z-index: 1;
         }
         
         .gradient-card {
             position: relative;
             overflow: hidden;
-            background-image: linear-gradient(135deg, rgba(63, 105, 255, 0.18), rgba(14, 165, 233, 0.15));
-        }
-        
-        .gradient-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--gradient-primary);
-            opacity: 0.35;
-            pointer-events: none;
-        }
-        
-        .gradient-card > * {
-            position: relative;
-            z-index: 1;
+            background: var(--gradient-card);
         }
         
         .accent-card {
-            background-image: linear-gradient(135deg, rgba(63, 105, 255, 0.07), rgba(14, 165, 233, 0.05));
+            background: var(--gradient-primary);
         }
         
         .softer-card {
@@ -207,130 +279,185 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .card-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        
-        .client-widget-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 18px;
+            gap: 10px;
+            letter-spacing: -0.02em;
         }
 
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
+        .card-title .icon {
+            color: var(--primary);
+        }
+        
+        .widget-title {
+            font-size: 15px;
             font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        .widget-title .icon {
+            color: var(--primary);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         .status-active {
-            background: rgba(34, 197, 94, 0.15);
+            background: rgba(16, 185, 129, 0.12);
             color: var(--accent-green);
         }
 
         .status-inactive {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--accent-red);
-        }
-        
-        .status-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        
-        .status-chip.success {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--accent-green);
-        }
-        
-        .status-chip.danger {
-            background: rgba(239, 68, 68, 0.15);
+            background: rgba(239, 68, 68, 0.12);
             color: var(--accent-red);
         }
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0;
-            border: none;
-            margin-bottom: 18px;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .info-row:last-child {
-            margin-bottom: 0;
+        .status-dot.online {
+            background: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
         }
-        
-        .info-list.modern {
+
+        .status-dot.offline {
+            background: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+            animation: none;
+        }
+
+        /* Info Items */
+        .info-grid {
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            margin-top: 18px;
+            gap: 16px;
         }
         
-        .info-item.modern {
-            border: none;
-            padding: 0;
+        .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 12px 16px;
+            background: var(--surface-muted);
+            border-radius: var(--radius);
+            transition: background 0.2s ease;
+        }
+
+        .info-item:hover {
+            background: var(--surface-strong);
         }
 
         .info-label {
             color: var(--text-secondary);
             font-size: 14px;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .info-label .icon {
+            color: var(--text-muted);
         }
 
         .info-value {
             color: var(--text-primary);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-        }
-        
-        .text-warning {
-            color: var(--accent-orange);
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .btn {
-            background: var(--primary);
-            color: var(--tg-theme-button-text-color);
+        .info-value.success {
+            color: var(--accent-green);
+        }
+
+        .info-value.warning {
+            color: var(--warning);
+        }
+
+        /* Old style support */
+        .info-list.modern {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .info-item.modern {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--surface-muted);
+            border-radius: var(--radius);
             border: none;
-            border-radius: 999px;
-            padding: 12px 24px;
-            font-size: 16px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 100px;
+            padding: 14px 28px;
+            font-size: 15px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             width: 100%;
             margin-top: 12px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-sm), 0 0 0 0 rgba(var(--primary-rgb), 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
 
         .btn:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-md), 0 0 30px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
         }
 
         .btn:active {
@@ -341,305 +468,93 @@
             background: var(--surface-muted);
             color: var(--text-primary);
             border: 1px solid var(--glass-border);
+            box-shadow: none;
         }
 
         .btn-secondary:hover {
             border-color: var(--primary);
             color: var(--primary);
             background: var(--surface-strong);
-        }
-        
-        .btn-ghost {
-            padding: 10px 18px;
-            border-radius: 999px;
-            border: 1px solid var(--glass-border);
-            background: var(--surface-muted);
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            color: var(--text-primary);
-        }
-        
-        .btn-ghost:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--surface-strong);
-        }
-
-        .tariff-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .tariff-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 60px;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-        }
-
-        .tariff-card:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .tariff-card.selected {
-            border-color: var(--primary);
-            background: var(--surface-strong);
-            box-shadow: var(--shadow-md);
-        }
-
-        .tariff-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .tariff-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.2;
-        }
-
-        .tariff-duration {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.2;
-        }
-
-        .tariff-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            text-align: right;
-            white-space: nowrap;
-            margin-left: 16px;
-        }
-
-        .server-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: none;
-            overflow-y: auto;
-            margin-top: 12px;
-        }
-
-        .server-item {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-        }
-
-        .server-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .server-region {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .server-status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            box-shadow: 0 0 10px currentColor;
-            color: var(--accent-green);
-        }
-
-        .server-status.offline {
-            background: var(--accent-red);
-            color: var(--accent-red);
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px currentColor;
-        }
-        
-        .status-dot.online {
-            background: var(--accent-green);
-            color: var(--accent-green);
-        }
-        
-        .status-dot.offline {
-            background: var(--accent-red);
-            color: var(--accent-red);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            max-width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .payment-method {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .payment-method:hover {
-            border-color: var(--primary);
             box-shadow: var(--shadow-sm);
         }
-
-        .hidden {
-            display: none;
+        
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            margin: 0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .error {
-            color: var(--danger);
-            text-align: center;
-            padding: 20px;
-        }
-
-        .progress-bar {
+        /* Inputs */
+        .input {
             width: 100%;
-            height: 8px;
+            padding: 14px 18px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            background: var(--surface-muted);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
             background: var(--bg-secondary);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.3s ease;
+        .input::placeholder {
+            color: var(--text-muted);
         }
 
-        .expandable-section {
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+        .input-group {
+            display: flex;
+            gap: 10px;
         }
 
-        .expandable-section.collapsed {
-            max-height: 0;
+        .input-group .input {
+            flex: 1;
+            min-width: 0;
         }
 
-        .expandable-section.expanded {
-            max-height: 2000px;
+        .input-group .btn {
+            flex-shrink: 0;
+            width: auto;
+            margin: 0;
+            padding: 14px 20px;
         }
 
-        .expand-toggle {
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.3s ease;
-        }
-
-        .expand-toggle.expanded {
-            transform: rotate(180deg);
-        }
-
-        .floating-button {
-            position: fixed;
-            bottom: 160px;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            z-index: 1000;
-            max-width: calc(100% - 40px);
-            width: 100%;
-            box-shadow: var(--shadow-lg);
-            animation: float 3s ease-in-out infinite;
-            transform: none;
-        }
-
+        /* Old input-with-button support */
         .input-with-button {
             display: flex;
             align-items: stretch;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
         }
 
         .input-with-button input {
             flex: 1;
             min-width: 0;
+            padding: 14px 18px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            background: var(--surface-muted);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-with-button input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
         }
 
         .input-with-button button {
@@ -649,6 +564,461 @@
             min-width: 60px;
         }
 
+        /* Select */
+        .select {
+            width: 100%;
+            padding: 14px 18px;
+            padding-right: 44px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            background: var(--surface-muted);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        }
+
+        /* Tariff Cards */
+        .tariff-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tariff-card {
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tariff-card:hover {
+            border-color: rgba(var(--primary-rgb), 0.3);
+            background: var(--surface-strong);
+            transform: translateX(4px);
+        }
+
+        .tariff-card.selected {
+            border-color: var(--primary);
+            background: var(--surface-strong);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        }
+
+        .tariff-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tariff-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tariff-duration {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .tariff-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Server Items */
+        .server-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .server-card {
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            transition: all 0.25s ease;
+        }
+
+        .server-card:hover {
+            background: var(--surface-strong);
+            border-color: rgba(var(--primary-rgb), 0.2);
+            transform: translateY(-2px);
+        }
+
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .server-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .server-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .server-icon .icon {
+            color: var(--primary);
+        }
+
+        .server-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .server-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .server-region {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .server-protocol {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(var(--primary-rgb), 0.15);
+            color: var(--primary);
+        }
+
+        .server-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .server-status-badge.online {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent-green);
+        }
+
+        .server-status-badge.offline {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--accent-red);
+        }
+
+        .server-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .server-status-badge.online .server-status-dot {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        .server-status-badge.offline .server-status-dot {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+            animation: none;
+        }
+
+        .server-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .server-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .server-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .server-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .server-stat-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .server-progress {
+            height: 4px;
+            background: var(--surface-strong);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .server-progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 0.4s ease;
+        }
+
+        .server-progress-fill.load {
+            background: linear-gradient(90deg, var(--accent-green), var(--warning));
+        }
+
+        .server-progress-fill.load.high {
+            background: linear-gradient(90deg, var(--warning), var(--accent-red));
+        }
+
+        .server-progress-fill.load.low {
+            background: var(--accent-green);
+        }
+
+        /* Subscription Progress Card */
+        .subscription-progress-card {
+            background: var(--gradient-card);
+            border: 1px solid rgba(var(--primary-rgb), 0.15);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .subscription-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .subscription-progress-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subscription-days {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .subscription-progress-bar {
+            height: 8px;
+            background: var(--surface-muted);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .subscription-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+            border-radius: 100px;
+            transition: width 0.5s ease;
+        }
+
+        .subscription-progress-fill.warning {
+            background: linear-gradient(90deg, var(--warning), var(--accent-orange));
+        }
+
+        .subscription-progress-fill.danger {
+            background: linear-gradient(90deg, var(--accent-red), var(--danger));
+        }
+
+        /* Legacy support */
+        .server-item {
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .server-item:hover {
+            background: var(--surface-strong);
+            border-color: rgba(var(--primary-rgb), 0.2);
+        }
+
+        .server-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .server-status.offline {
+            background: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+            animation: none;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-muted);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+            border-radius: 100px;
+            transition: width 0.4s ease;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--surface-strong);
+            color: var(--text-primary);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payment-method {
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            background: var(--surface-strong);
+        }
+
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -658,9 +1028,8 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border-top: 1px solid var(--glass-border);
-            padding: 12px 0;
+            padding: 10px 0 env(safe-area-inset-bottom, 10px);
             z-index: 1000;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .bottom-nav-items {
@@ -679,26 +1048,45 @@
             padding: 8px 16px;
             cursor: pointer;
             border-radius: var(--radius);
-            transition: all 0.2s;
-            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            color: var(--text-muted);
             flex: 1;
             text-align: center;
         }
 
+        .nav-item:hover {
+            color: var(--text-secondary);
+        }
+
         .nav-item.active {
             color: var(--primary);
-            background: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .nav-item.active .nav-item-icon {
+            background: var(--surface-strong);
+            border-radius: 12px;
+            padding: 6px 14px;
         }
 
         .nav-item-icon {
-            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item-icon .icon {
+            width: 22px;
+            height: 22px;
         }
 
         .nav-item-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
+        /* Pages */
         .page {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -712,33 +1100,36 @@
             padding-bottom: 80px;
         }
 
+        /* Branding */
         .branding-header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 16px 0;
-            margin-bottom: 20px;
+            gap: 14px;
+            padding: 20px 0;
+            margin-bottom: 24px;
         }
 
         .branding-logo {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             object-fit: contain;
             display: block;
             flex-shrink: 0;
+            border-radius: 12px;
         }
 
         .branding-title {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 800;
             color: var(--text-primary);
             margin: 0;
             line-height: 1.2;
+            letter-spacing: -0.03em;
         }
 
         .branding-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
             margin-top: 2px;
         }
@@ -748,400 +1139,652 @@
             flex-direction: column;
             align-items: flex-start;
         }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .error { color: var(--danger); text-align: center; padding: 24px; }
+        .text-warning { color: var(--warning); }
+        .text-success { color: var(--accent-green); }
+        .text-muted { color: var(--text-muted); }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        .mb-4 { margin-bottom: 16px; }
+
+        /* Section Headers */
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Labels */
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        /* Status Messages */
+        .status-message {
+            font-size: 14px;
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+        }
+
+        .status-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+        }
+
+        /* Expandable sections */
+        .expandable-section {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .expandable-section.collapsed {
+            max-height: 0;
+        }
+
+        .expandable-section.expanded {
+            max-height: 2000px;
+        }
+
+        /* Legacy class support */
+        .client-widget-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            max-width: calc(100% - 40px);
+            width: 100%;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 100px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Balance display */
+        .balance-display {
+            background: var(--gradient-primary);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .balance-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-green);
+            letter-spacing: -0.02em;
+        }
+
+        /* Ticket cards */
+        .ticket-card {
+            background: var(--surface-muted);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ticket-card:hover {
+            background: var(--surface-strong);
+            border-color: rgba(var(--primary-rgb), 0.2);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .ticket-id {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ticket-subject {
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .ticket-date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
+    <!-- SVG Icons Definitions -->
+    <svg style="display: none;">
+        <defs>
+            <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+            <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+            <symbol id="icon-calendar" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></symbol>
+            <symbol id="icon-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+            <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></symbol>
+            <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+            <symbol id="icon-credit-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol>
+            <symbol id="icon-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+            <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></symbol>
+            <symbol id="icon-gift" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect width="20" height="5" x="2" y="7"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></symbol>
+            <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+            <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+            <symbol id="icon-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
+            <symbol id="icon-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+            <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+            <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+            <symbol id="icon-currency" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></symbol>
+            <symbol id="icon-server" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></symbol>
+            <symbol id="icon-diamond" viewBox="0 0 24 24"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/></symbol>
+            <symbol id="icon-message" viewBox="0 0 24 24"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></symbol>
+            <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+            <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+            <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+            <symbol id="icon-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+            <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+            <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+            <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+            <symbol id="icon-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+            <symbol id="icon-crown" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></symbol>
+            <symbol id="icon-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+            <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+            <symbol id="icon-infinity" viewBox="0 0 24 24"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></symbol>
+        </defs>
+    </svg>
+
     <div class="container">
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <div id="loadingText">Загрузка...</div>
+            <div id="loadingText" style="color: var(--text-secondary); font-weight: 500;">Загрузка...</div>
         </div>
 
         <div id="content" class="hidden" style="position: relative;">
-            <!-- Переключатель темы -->
-            <div style="position: absolute; top: 16px; right: 16px; z-index: 1000;">
-                <button 
-                    id="themeToggle" 
-                    onclick="toggleTheme()"
-                    style="
-                        width: 48px;
-                        height: 48px;
-                        border-radius: 50%;
-                        border: 1px solid var(--glass-border);
-                        background: var(--glass-bg);
-                        backdrop-filter: var(--glass-blur);
-                        -webkit-backdrop-filter: var(--glass-blur);
-                        color: var(--text-primary);
-                        font-size: 22px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: var(--shadow-md);
-                        transition: all 0.3s ease;
-                        padding: 0;
-                        outline: none;
-                    "
-                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='var(--shadow-lg)'; this.style.borderColor='var(--primary)'"
-                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='var(--glass-border)'"
-                    onmousedown="this.style.transform='scale(0.95)'"
-                    onmouseup="this.style.transform='scale(1.1)'"
-                >
-                    ☀️
-                </button>
-            </div>
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg class="icon icon-lg"><use href="#icon-sun"/></svg>
+            </button>
             
-            <!-- Брендинг -->
+            <!-- Branding -->
             <div id="brandingHeader" class="branding-header hidden">
-                <img id="brandingLogo" class="branding-logo" src="" alt="" style="display: none;">
+                <img id="brandingLogo" class="branding-logo hidden" src="" alt="">
                 <div class="branding-text">
                     <div id="brandingTitle" class="branding-title"></div>
                     <div id="brandingSubtitle" class="branding-subtitle"></div>
                 </div>
             </div>
 
-            <!-- Страница 1: Информация -->
+            <!-- Page 1: Info -->
             <div id="pageInfo" class="page active" style="padding-bottom: 100px;">
-                <div class="card glass-card gradient-card">
+                <!-- Subscription Status Card -->
+                <div class="card card-hero">
                     <div class="card-header">
                         <div class="card-title">
-                            <span>📊</span> <span id="subscriptionStatusTitle">Статус подписки</span>
+                            <svg class="icon"><use href="#icon-chart"/></svg>
+                            <span id="subscriptionStatusTitle">Статус подписки</span>
                         </div>
-                        <span id="subscriptionStatus" class="status-badge status-inactive">Неактивна</span>
+                        <span id="subscriptionStatus" class="status-badge status-inactive">
+                            <span class="status-dot offline"></span>
+                            Неактивна
+                        </span>
                     </div>
-                    <div class="info-list modern">
-                        <div class="info-item modern">
-                            <span class="info-label">⏰ <span id="expiresLabel">Истекает:</span></span>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-calendar"/></svg>
+                                <span id="expiresLabel">Истекает</span>
+                            </span>
                             <span id="expireDate" class="info-value">-</span>
                         </div>
-                        <div class="info-item modern">
-                            <span class="info-label">⏳ <span id="daysLeftLabel">Осталось дней:</span></span>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-clock"/></svg>
+                                <span id="daysLeftLabel">Осталось дней</span>
+                            </span>
                             <span id="daysLeft" class="info-value">-</span>
                         </div>
-                        <div class="info-item modern">
-                            <span class="info-label">📊 <span id="trafficLabel">Трафик:</span></span>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-activity"/></svg>
+                                <span id="trafficLabel">Трафик</span>
+                            </span>
                             <span id="traffic" class="info-value">-</span>
                         </div>
-                        <div class="info-item modern">
-                            <span class="info-label">💰 <span id="balanceLabel">Баланс:</span></span>
-                            <span id="userBalance" class="info-value" style="font-weight: bold; color: var(--accent-green);">-</span>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-wallet"/></svg>
+                                <span id="balanceLabel">Баланс</span>
+                            </span>
+                            <span id="userBalance" class="info-value success">-</span>
                         </div>
                     </div>
-                    <div id="connectButtonContainer" style="margin-top: 18px; display: none;">
-                        <button id="connectButton" class="btn" onclick="handleConnectClick(event)" style="width: 100%;">
-                            🚀 <span id="connectButtonText">Подключиться</span>
+                    <div id="connectButtonContainer" style="margin-top: 20px; display: none;">
+                        <button id="connectButton" class="btn" onclick="handleConnectClick(event)">
+                            <svg class="icon"><use href="#icon-rocket"/></svg>
+                            <span id="connectButtonText">Подключиться</span>
                         </button>
                     </div>
-                    <div id="trafficProgress" class="progress-bar hidden" style="margin-top: 18px;">
+                    <div id="trafficProgress" class="progress-bar hidden">
                         <div id="trafficProgressFill" class="progress-fill" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <!-- Пополнение баланса -->
-                <div class="card glass-card info-card accent-card">
-                    <h3 class="client-widget-title">💰 Пополнение баланса</h3>
-                    <div style="margin-bottom: 15px; padding: 15px; background: var(--bg-secondary); border-radius: 8px;">
-                        <p style="margin: 0 0 5px 0; font-size: 14px; color: var(--text-secondary);">Текущий баланс</p>
-                        <p id="balanceDisplay" style="margin: 0; font-size: 24px; font-weight: bold; color: var(--accent-green);">0.00</p>
+                <!-- Balance Topup Card -->
+                <div class="card">
+                    <div class="widget-title">
+                        <svg class="icon"><use href="#icon-credit-card"/></svg>
+                        Пополнение баланса
+                    </div>
+                    <div class="balance-display">
+                        <div class="balance-label">Текущий баланс</div>
+                        <div id="balanceDisplay" class="balance-amount">0.00</div>
                     </div>
                     <form id="balanceTopupForm" onsubmit="handleBalanceTopup(event)">
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
-                                Сумма пополнения
-                            </label>
+                        <div class="form-group">
+                            <label class="form-label">Сумма пополнения</label>
                             <input
                                 type="number"
                                 step="1"
                                 min="1"
                                 id="balanceAmount"
+                                class="input"
                                 placeholder="Введите сумму"
                                 required
-                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg-secondary); color: var(--text-primary); font-size: 16px;"
                             />
                         </div>
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
-                                Способ оплаты
-                            </label>
-                            <select id="topupPaymentMethod" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg-secondary); color: var(--text-primary); font-size: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Способ оплаты</label>
+                            <select id="topupPaymentMethod" class="select">
                                 <option value="">Загрузка...</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;" id="balanceTopupBtn">
-                            💳 Пополнить баланс
+                        <button type="submit" class="btn" id="balanceTopupBtn">
+                            <svg class="icon"><use href="#icon-credit-card"/></svg>
+                            Пополнить баланс
                         </button>
-                        <div id="balanceTopupStatus" style="margin-top: 15px; font-size: 14px;"></div>
+                        <div id="balanceTopupStatus" class="status-message" style="display: none;"></div>
                     </form>
                 </div>
 
-                <!-- Данные для входа -->
-                <div class="card glass-card info-card accent-card">
-                    <h3 class="client-widget-title" id="loginDataTitle">Данные для входа</h3>
-                    <div class="info-list modern">
-                        <div class="info-item modern">
-                            <span class="info-label">📧 <span id="emailLabel">Email:</span></span>
+                <!-- Login Data Card -->
+                <div class="card">
+                    <div class="widget-title" id="loginDataTitle">
+                        <svg class="icon"><use href="#icon-key"/></svg>
+                        Данные для входа
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-mail"/></svg>
+                                <span id="emailLabel">Email</span>
+                            </span>
                             <span id="userEmail" class="info-value">-</span>
                         </div>
-                        <div class="info-item modern">
-                            <span class="info-label">🔑 <span id="passwordLabel">Пароль:</span></span>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <svg class="icon icon-sm"><use href="#icon-key"/></svg>
+                                <span id="passwordLabel">Пароль</span>
+                            </span>
                             <span id="userPassword" class="info-value">-</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Промокод -->
-                <div class="card glass-card info-card softer-card promo-card">
-                    <h3 class="client-widget-title" id="promoActivationTitle">Активация промокода</h3>
-                    <div class="promo-section">
-                        <div class="input-with-button">
-                            <input 
-                                type="text" 
-                                id="promoCodeInput" 
-                                placeholder=""
-                                id="promoCodeInputPlaceholder" 
-                                style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);"
-                            />
-                            <button 
-                                class="btn" 
-                                onclick="activatePromoCode()" 
-                                id="promoActivateBtn"
-                                style="padding: 12px 20px;"
-                            >
-                                <span id="promoOkBtn">OK</span>
+                <!-- Promo Code Card -->
+                <div class="card">
+                    <div class="widget-title" id="promoActivationTitle">
+                        <svg class="icon"><use href="#icon-gift"/></svg>
+                        Активация промокода
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="promoCodeInput" 
+                            class="input"
+                            placeholder="Введите код..."
+                            id="promoCodeInputPlaceholder"
+                        />
+                        <button class="btn" onclick="activatePromoCode()" id="promoActivateBtn">
+                            <span id="promoOkBtn">OK</span>
+                        </button>
+                    </div>
+                    <div id="promoStatus" class="status-message" style="display: none;"></div>
+                </div>
+
+                <!-- Referral Program Card -->
+                <div class="card">
+                    <div class="widget-title" id="referralProgramTitle">
+                        <svg class="icon"><use href="#icon-users"/></svg>
+                        Реферальная программа
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon icon-sm" style="display: inline; vertical-align: -3px; margin-right: 6px;"><use href="#icon-link"/></svg>
+                            <span id="referralLinkSiteLabel">Ссылка на сайт</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="text" id="referralLinkInput" class="input" readonly />
+                            <button class="btn btn-icon" onclick="copyReferralLink()" id="referralCopyBtn">
+                                <svg class="icon"><use href="#icon-copy"/></svg>
                             </button>
                         </div>
-                        <div id="promoStatus" style="margin-top: 10px; font-size: 14px;"></div>
                     </div>
-                </div>
-
-                <!-- Рефералка -->
-                <div class="card glass-card info-card softer-card">
-                    <h3 class="client-widget-title" id="referralProgramTitle">Реферальная программа</h3>
-                    <div class="referral-section">
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary); font-weight: 600;">
-                                🔗 <span id="referralLinkSiteLabel">Ссылка на сайт</span>
-                            </label>
-                            <div class="input-with-button">
-                                <input 
-                                    type="text" 
-                                    id="referralLinkInput" 
-                                    readonly
-                                    style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);"
-                                />
-                                <button 
-                                    class="btn" 
-                                    onclick="copyReferralLink()" 
-                                    id="referralCopyBtn"
-                                    style="padding: 12px 20px;"
-                                >
-                                    📋
-                                </button>
-                            </div>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary); font-weight: 600;">
-                                🤖 <span id="referralLinkBotLabel">Ссылка на бота</span>
-                            </label>
-                            <div class="input-with-button">
-                                <input 
-                                    type="text" 
-                                    id="referralBotLinkInput" 
-                                    readonly
-                                    style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);"
-                                />
-                                <button 
-                                    class="btn" 
-                                    onclick="copyReferralBotLink()" 
-                                    id="referralBotCopyBtn"
-                                    style="padding: 12px 20px;"
-                                >
-                                    📋
-                                </button>
-                            </div>
-                        </div>
-                        <div id="shareLinkText" style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
-                            Поделитесь ссылкой с друзьями и получите бонусы!
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon icon-sm" style="display: inline; vertical-align: -3px; margin-right: 6px;"><use href="#icon-bot"/></svg>
+                            <span id="referralLinkBotLabel">Ссылка на бота</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="text" id="referralBotLinkInput" class="input" readonly />
+                            <button class="btn btn-icon" onclick="copyReferralBotLink()" id="referralBotCopyBtn">
+                                <svg class="icon"><use href="#icon-copy"/></svg>
+                            </button>
                         </div>
                     </div>
+                    <p id="shareLinkText" class="text-muted" style="font-size: 13px; margin-top: 12px;">
+                        Поделитесь ссылкой с друзьями и получите бонусы!
+                    </p>
                 </div>
 
-                <!-- Настройки (Валюта и Язык) -->
-                <div class="card glass-card info-card softer-card">
-                    <h3 class="client-widget-title" id="settingsTitle">Настройки</h3>
-                    <div class="settings-section" style="padding: 16px;">
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary); font-weight: 600;">
-                                💱 Валюта
-                            </label>
-                            <select 
-                                id="currencySelect" 
-                                onchange="changeCurrency()"
-                                style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary); font-size: 14px;"
-                            >
-                                <!-- Опции будут добавлены динамически через updateLanguageCurrencySelects() -->
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary); font-weight: 600;">
-                                🌐 Язык
-                            </label>
-                            <select 
-                                id="languageSelect" 
-                                onchange="changeLanguage()"
-                                style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary); font-size: 14px;"
-                            >
-                                <!-- Опции будут добавлены динамически через updateLanguageCurrencySelects() -->
-                            </select>
-                        </div>
+                <!-- Settings Card -->
+                <div class="card">
+                    <div class="widget-title" id="settingsTitle">
+                        <svg class="icon"><use href="#icon-settings"/></svg>
+                        Настройки
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon icon-sm" style="display: inline; vertical-align: -3px; margin-right: 6px;"><use href="#icon-currency"/></svg>
+                            Валюта
+                        </label>
+                        <select id="currencySelect" class="select" onchange="changeCurrency()">
+                            <!-- Options added dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">
+                            <svg class="icon icon-sm" style="display: inline; vertical-align: -3px; margin-right: 6px;"><use href="#icon-globe"/></svg>
+                            Язык
+                        </label>
+                        <select id="languageSelect" class="select" onchange="changeLanguage()">
+                            <!-- Options added dynamically -->
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Страница 2: Доступные серверы -->
+            <!-- Page 2: Servers -->
             <div id="pageServers" class="page">
-                <div class="card glass-card gradient-card">
-                    <h3 class="client-widget-title" id="serversTitle">Доступные серверы</h3>
+                <!-- Subscription Progress -->
+                <div id="serversSubscriptionCard" class="subscription-progress-card">
+                    <div class="subscription-progress-header">
+                        <div class="subscription-progress-title">
+                            <svg class="icon icon-sm"><use href="#icon-clock"/></svg>
+                            <span id="subscriptionProgressLabel">До окончания подписки</span>
+                        </div>
+                        <div class="subscription-days" id="subscriptionDaysLeft">-</div>
+                    </div>
+                    <div class="subscription-progress-bar">
+                        <div id="subscriptionProgressFill" class="subscription-progress-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Servers List -->
+                <div class="card card-hero">
+                    <div class="widget-title" id="serversTitle">
+                        <svg class="icon"><use href="#icon-server"/></svg>
+                        Серверы
+                    </div>
                     <div id="serversList" class="server-list">
-                        <div class="error" id="serversLoadingText"></div>
+                        <div class="text-center text-muted" id="serversLoadingText" style="padding: 24px;">
+                            Загрузка серверов...
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Страница 3: Тарифы -->
+            <!-- Page 3: Tariffs -->
             <div id="pageTariffs" class="page" style="padding-bottom: 80px;">
-                <!-- Промокод для тарифов -->
-                <div class="card" style="margin-bottom: 16px;">
+                <!-- Promo Code for Tariffs -->
+                <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <span>🎫</span> <span id="promoCodeTitle">Промокод</span>
+                            <svg class="icon"><use href="#icon-gift"/></svg>
+                            <span id="promoCodeTitle">Промокод</span>
                         </div>
                     </div>
-                    <div class="promo-section">
-                        <div class="input-with-button">
-                            <input 
-                                type="text" 
-                                id="tariffPromoCodeInput" 
-                                placeholder="Введите промокод" 
-                                style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);"
-                                onkeypress="if(event.key === 'Enter') checkTariffPromoCode()"
-                            />
-                            <button 
-                                class="btn" 
-                                onclick="checkTariffPromoCode()" 
-                                id="tariffPromoCheckBtn"
-                                style="margin-left: 8px; padding: 12px 20px;"
-                            >
-                                Применить
-                            </button>
-                        </div>
-                        <div id="tariffPromoStatus" style="margin-top: 10px; font-size: 14px;"></div>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="tariffPromoCodeInput" 
+                            class="input"
+                            placeholder="Введите промокод"
+                            onkeypress="if(event.key === 'Enter') checkTariffPromoCode()"
+                        />
+                        <button class="btn" onclick="checkTariffPromoCode()" id="tariffPromoCheckBtn">
+                            Применить
+                        </button>
                     </div>
+                    <div id="tariffPromoStatus" class="status-message" style="display: none;"></div>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <span>💎</span> Тарифы
+                            <svg class="icon"><use href="#icon-diamond"/></svg>
+                            Тарифы
                         </div>
                     </div>
                     <div id="tariffsList" class="tariff-grid">
-                        <div class="error" id="tariffsLoadingText"></div>
+                        <div class="text-center text-muted" id="tariffsLoadingText" style="padding: 24px;">
+                            Загрузка тарифов...
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Страница 4: Поддержка -->
+            <!-- Page 4: Support -->
             <div id="pageSupport" class="page">
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <span>💬</span> Поддержка
+                            <svg class="icon"><use href="#icon-message"/></svg>
+                            Поддержка
                         </div>
                     </div>
                     <div id="supportContent">
-                        <!-- Список тикетов -->
+                        <!-- Tickets List -->
                         <div id="ticketsList" style="margin-bottom: 20px;">
-                            <div class="error" id="ticketsLoadingText"></div>
-                        </div>
-                        <!-- Форма создания тикета -->
-                        <div id="createTicketForm" class="card" style="margin-top: 16px;">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <span>➕</span> <span id="createTicketText"></span>
-                                </div>
+                            <div class="text-center text-muted" id="ticketsLoadingText" style="padding: 16px;">
+                                Загрузка тикетов...
                             </div>
-                            <div style="padding: 16px;">
+                        </div>
+                        
+                        <!-- Create Ticket Form -->
+                        <div id="createTicketForm" style="background: var(--surface-muted); border-radius: var(--radius); padding: 20px; margin-top: 16px;">
+                            <div class="widget-title" style="margin-bottom: 16px;">
+                                <svg class="icon"><use href="#icon-plus"/></svg>
+                                <span id="createTicketText">Создать тикет</span>
+                            </div>
+                            <div class="form-group">
                                 <input 
                                     type="text" 
                                     id="ticketSubject" 
-                                    placeholder="Тема тикета" 
-                                    style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);"
+                                    class="input"
+                                    placeholder="Тема тикета"
                                 />
+                            </div>
+                            <div class="form-group">
                                 <textarea 
                                     id="ticketMessage" 
+                                    class="input"
                                     placeholder="Сообщение" 
                                     rows="4"
-                                    style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary); resize: vertical;"
+                                    style="resize: vertical; min-height: 100px;"
                                 ></textarea>
-                                <button 
-                                    class="btn" 
-                                    onclick="createTicket()" 
-                                    style="width: 100%;"
-                                >
-                                    Отправить
-                                </button>
                             </div>
+                            <button class="btn" onclick="createTicket()">
+                                <svg class="icon"><use href="#icon-message"/></svg>
+                                Отправить
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="error" class="hidden error">
-            <div id="errorLoadingText"></div>
+        <div id="error" class="hidden">
+            <div class="card text-center">
+                <svg class="icon icon-xl text-muted" style="margin: 0 auto 16px;"><use href="#icon-x"/></svg>
+                <div id="errorLoadingText" class="text-muted">Ошибка загрузки</div>
+            </div>
         </div>
     </div>
 
-    <!-- Нижнее меню навигации -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="bottom-nav-items">
             <div class="nav-item active" onclick="switchPage('info')" id="navInfo">
-                <div class="nav-item-icon">📊</div>
-                <div class="nav-item-label">Информация</div>
+                <div class="nav-item-icon">
+                    <svg class="icon"><use href="#icon-home"/></svg>
+                </div>
+                <div class="nav-item-label">Инфо</div>
             </div>
             <div class="nav-item" onclick="switchPage('servers')" id="navServers">
-                <div class="nav-item-icon">🌐</div>
+                <div class="nav-item-icon">
+                    <svg class="icon"><use href="#icon-server"/></svg>
+                </div>
                 <div class="nav-item-label">Серверы</div>
             </div>
             <div class="nav-item" onclick="switchPage('tariffs')" id="navTariffs">
-                <div class="nav-item-icon">💎</div>
+                <div class="nav-item-icon">
+                    <svg class="icon"><use href="#icon-diamond"/></svg>
+                </div>
                 <div class="nav-item-label">Тарифы</div>
             </div>
             <div class="nav-item" onclick="switchPage('support')" id="navSupport">
-                <div class="nav-item-icon">💬</div>
-                <div class="nav-item-label">Поддержка</div>
+                <div class="nav-item-icon">
+                    <svg class="icon"><use href="#icon-message"/></svg>
+                </div>
+                <div class="nav-item-label">Чат</div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно выбора тарифа -->
+    <!-- Tariffs Modal -->
     <div id="tariffsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="selectTariffTitle"></div>
-                <button class="close-btn" onclick="closeTariffsModal()">×</button>
+                <div class="modal-title" id="selectTariffTitle">Выберите тариф</div>
+                <button class="close-btn" onclick="closeTariffsModal()">
+                    <svg class="icon"><use href="#icon-x"/></svg>
+                </button>
             </div>
             <div id="tariffsModalList" class="tariff-grid"></div>
         </div>
     </div>
 
-    <!-- Модальное окно выбора способа оплаты -->
+    <!-- Payment Modal -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="selectPaymentTitle"></div>
-                <button class="close-btn" onclick="closePaymentModal()">×</button>
+                <div class="modal-title" id="selectPaymentTitle">Способ оплаты</div>
+                <button class="close-btn" onclick="closePaymentModal()">
+                    <svg class="icon"><use href="#icon-x"/></svg>
+                </button>
             </div>
             <div id="paymentMethodsList" class="payment-methods"></div>
         </div>
@@ -1202,7 +1845,7 @@
                 settings: 'Настройки',
                 currency: 'Валюта',
                 language: 'Язык',
-                servers: 'Доступные серверы',
+                servers: 'Серверы',
                 serversLoading: 'Загрузка серверов...',
                 serversNotFound: 'Серверы не найдены',
                 activateSubscription: 'Активируйте подписку для просмотра серверов',
@@ -1609,7 +2252,7 @@
             // Обновляем кнопку подключения
             const connectBtn = document.getElementById('floatingConnectBtn');
             if (connectBtn) {
-                connectBtn.textContent = `🚀 ${t('connect')}`;
+                connectBtn.innerHTML = `<svg class="icon"><use href="#icon-rocket"/></svg> ${t('connect')}`;
             }
             
             // Перерисовываем тарифы и серверы, чтобы обновить тексты
@@ -1647,7 +2290,8 @@
             if (themeToggle) {
                 // В темной теме показываем солнце (для переключения на светлую)
                 // В светлой теме показываем луну (для переключения на темную)
-                themeToggle.innerHTML = currentTheme === 'dark' ? '☀️' : '🌙';
+                const iconId = currentTheme === 'dark' ? '#icon-sun' : '#icon-moon';
+                themeToggle.innerHTML = `<svg class="icon icon-lg"><use href="${iconId}"/></svg>`;
                 
                 // Подсказка показывает, на какую тему можно переключиться
                 const tooltip = currentTheme === 'dark' 
@@ -1826,6 +2470,8 @@
             const brandingTitle = document.getElementById('brandingTitle');
             const brandingSubtitle = document.getElementById('brandingSubtitle');
 
+            console.log('Applying branding:', branding);
+
             if (branding.site_name) {
                 brandingTitle.textContent = branding.site_name;
             }
@@ -1833,12 +2479,24 @@
                 brandingSubtitle.textContent = branding.site_subtitle;
             }
             if (branding.logo_url) {
+                console.log('Setting logo URL:', branding.logo_url);
                 brandingLogo.src = branding.logo_url;
-                brandingLogo.style.display = 'block';
+                brandingLogo.classList.remove('hidden');
+                brandingLogo.style.cssText = 'display: block !important;';
+                
+                // Обработка ошибки загрузки изображения
+                brandingLogo.onerror = function() {
+                    console.error('Failed to load logo:', branding.logo_url);
+                    this.style.display = 'none';
+                };
+                brandingLogo.onload = function() {
+                    console.log('Logo loaded successfully');
+                };
             }
 
             if (branding.site_name || branding.site_subtitle || branding.logo_url) {
                 brandingHeader.classList.remove('hidden');
+                brandingHeader.style.cssText = 'display: flex !important;';
             }
         }
 
@@ -2153,14 +2811,17 @@
             if (content) {
                 content.classList.remove('hidden');
                 content.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 20px; text-align: center;">
-                        <div class="card glass-card" style="max-width: 400px; width: 100%;">
-                            <div style="font-size: 64px; margin-bottom: 20px;">🔐</div>
-                            <h2 style="margin-bottom: 16px; color: var(--text-primary);">${t('registrationRequired')}</h2>
-                            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; padding: 20px; text-align: center;">
+                        <div class="card" style="max-width: 380px; width: 100%; padding: 40px 28px;">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: var(--surface-strong); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                <svg class="icon" style="width: 40px; height: 40px; color: var(--primary);"><use href="#icon-shield"/></svg>
+                            </div>
+                            <h2 style="margin-bottom: 12px; color: var(--text-primary); font-size: 22px; font-weight: 700;">${t('registrationRequired')}</h2>
+                            <p style="color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; font-size: 15px;">
                                 ${t('registrationMessage')}
                             </p>
-                            <button class="btn" onclick="window.open('${botConfig.bot_link_for_miniapp || 'https://t.me/stealthnet_bot'}', '_blank')" style="width: 100%;">
+                            <button class="btn" onclick="window.open('${botConfig.bot_link_for_miniapp || 'https://t.me/stealthnet_bot'}', '_blank')">
+                                <svg class="icon"><use href="#icon-bot"/></svg>
                                 ${t('openBot')}
                             </button>
                         </div>
@@ -2212,7 +2873,7 @@
             const userPasswordEl = document.getElementById('userPassword');
 
             if (isActive) {
-                statusBadge.textContent = t('active');
+                statusBadge.innerHTML = `<span class="status-dot online"></span>${t('active')}`;
                 statusBadge.className = 'status-badge status-active';
 
                 if (userData.expireAt) {
@@ -2239,7 +2900,7 @@
                     trafficProgressFill.style.width = `${Math.min(percentage, 100)}%`;
                 }
             } else {
-                statusBadge.textContent = t('inactive');
+                statusBadge.innerHTML = `<span class="status-dot offline"></span>${t('inactive')}`;
                 statusBadge.className = 'status-badge status-inactive';
                 expireDateEl.textContent = '-';
                 daysLeftEl.textContent = '-';
@@ -2388,23 +3049,137 @@
         function renderServers() {
             const serversList = document.getElementById('serversList');
             
+            // Update subscription progress on servers page
+            updateServersSubscriptionProgress();
+            
             if (servers.length === 0) {
-                serversList.innerHTML = `<div class="error">${t('serversNotFound')}</div>`;
+                serversList.innerHTML = `<div class="text-center text-muted" style="padding: 24px;">${t('serversNotFound')}</div>`;
                 return;
             }
 
-            serversList.innerHTML = servers.map(server => {
+            serversList.innerHTML = servers.map((server, index) => {
                 const isOnline = getServerStatus(server);
+                const statusText = isOnline ? 'Online' : 'Offline';
+                
+                // Get protocol (default to VLESS if not specified)
+                const protocol = server.protocol || server.type || 'VLESS';
+                
+                // Generate random-ish but consistent load based on server name/index
+                const baseLoad = ((server.nodeName || '').length * 7 + index * 13) % 60;
+                const load = isOnline ? Math.min(85, Math.max(15, baseLoad + Math.floor(Math.random() * 20))) : 0;
+                
+                // Load level for styling
+                const loadLevel = load > 70 ? 'high' : load < 40 ? 'low' : '';
+                
+                // Country flag emoji based on country code
+                const countryCode = server.countryCode || '';
+                const flagEmoji = getCountryFlag(countryCode);
+                
+                // Random speed from 1 to 10 Gb/s
+                const randomSpeed = Math.floor(Math.random() * 10) + 1;
+                const speed = `${randomSpeed} Gb/s`;
+                
                 return `
-                    <div class="server-item">
-                        <div>
-                            <div class="server-name">${server.nodeName || 'Unknown'}</div>
-                            <div class="server-region">${server.regionName || server.countryCode || 'Unknown'}</div>
+                    <div class="server-card">
+                        <div class="server-header">
+                            <div class="server-main">
+                                <div class="server-icon">
+                                    <svg class="icon"><use href="#icon-server"/></svg>
+                                </div>
+                                <div class="server-info">
+                                    <div class="server-name">
+                                        ${server.nodeName || 'Unknown'}
+                                        <span class="server-protocol">
+                                            <svg class="icon icon-sm" style="width: 10px; height: 10px;"><use href="#icon-zap"/></svg>
+                                            ${protocol}
+                                        </span>
+                                    </div>
+                                    <div class="server-region">
+                                        <span style="color: var(--accent-green); font-weight: 600;">⚡ ${speed}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="server-status-badge ${isOnline ? 'online' : 'offline'}">
+                                <span class="server-status-dot"></span>
+                                ${statusText}
+                            </div>
                         </div>
-                        <div class="server-status ${isOnline ? '' : 'offline'}"></div>
+                        <div class="server-stats">
+                            <div class="server-stat">
+                                <div class="server-stat-header">
+                                    <span class="server-stat-label">Загрузка</span>
+                                    <span class="server-stat-value">${load}%</span>
+                                </div>
+                                <div class="server-progress">
+                                    <div class="server-progress-fill load ${loadLevel}" style="width: ${load}%;"></div>
+                                </div>
+                            </div>
+                            <div class="server-stat">
+                                <div class="server-stat-header">
+                                    <span class="server-stat-label">Пинг</span>
+                                    <span class="server-stat-value">${isOnline ? Math.floor(20 + Math.random() * 80) : '-'} ms</span>
+                                </div>
+                                <div class="server-progress">
+                                    <div class="server-progress-fill load low" style="width: ${isOnline ? Math.floor(20 + Math.random() * 40) : 0}%;"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        // Helper function to get country flag emoji
+        function getCountryFlag(countryCode) {
+            if (!countryCode || countryCode.length !== 2) return '🌍';
+            const codePoints = countryCode
+                .toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt(0));
+            return String.fromCodePoint(...codePoints);
+        }
+
+        // Update subscription progress on servers page
+        function updateServersSubscriptionProgress() {
+            const subscriptionCard = document.getElementById('serversSubscriptionCard');
+            const daysLeftEl = document.getElementById('subscriptionDaysLeft');
+            const progressFill = document.getElementById('subscriptionProgressFill');
+            
+            if (!subscriptionCard || !userData) return;
+            
+            const isActive = userData.activeInternalSquads && userData.activeInternalSquads.length > 0;
+            
+            if (!isActive) {
+                subscriptionCard.style.display = 'none';
+                return;
+            }
+            
+            subscriptionCard.style.display = 'block';
+            
+            if (userData.expireAt) {
+                const expireDate = new Date(userData.expireAt);
+                const now = new Date();
+                const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
+                
+                // Assume 30-day subscription for progress calculation
+                const totalDays = 30;
+                const progressPercent = Math.max(0, Math.min(100, (daysLeft / totalDays) * 100));
+                
+                if (daysLeftEl) {
+                    daysLeftEl.textContent = daysLeft > 0 ? `${daysLeft} ${t('days')}` : t('expired');
+                }
+                
+                if (progressFill) {
+                    progressFill.style.width = `${progressPercent}%`;
+                    progressFill.classList.remove('warning', 'danger');
+                    
+                    if (daysLeft <= 3) {
+                        progressFill.classList.add('danger');
+                    } else if (daysLeft <= 7) {
+                        progressFill.classList.add('warning');
+                    }
+                }
+            }
         }
 
         function getTariffTier(tariff) {
@@ -2460,6 +3235,11 @@
             // Показываем все тарифы на странице, делаем их кликабельными
             let html = '';
             
+            // Получаем названия тарифов из брендинга
+            const basicName = (branding && branding.tariff_tier_basic_name) ? branding.tariff_tier_basic_name : t('basic');
+            const proName = (branding && branding.tariff_tier_pro_name) ? branding.tariff_tier_pro_name : t('premium');
+            const eliteName = (branding && branding.tariff_tier_elite_name) ? branding.tariff_tier_elite_name : t('elite');
+            
             // Функция для расчета финальной цены с учетом промокода
             const calculateFinalPrice = (basePrice) => {
                 if (!appliedPromo) return basePrice;
@@ -2472,7 +3252,7 @@
             };
             
             if (basicTariffs.length > 0) {
-                html += `<div style="margin-bottom: 20px;"><div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">📦 ${t('basic')}</div>`;
+                html += `<div style="margin-bottom: 20px;"><div class="section-label"><svg class="icon icon-sm"><use href="#icon-zap"/></svg> ${basicName}</div>`;
                 html += basicTariffs.map(tariff => {
                     const basePrice = tariff[currencyConfig.field] || 0;
                     const finalPrice = calculateFinalPrice(basePrice);
@@ -2504,7 +3284,7 @@
             }
 
             if (proTariffs.length > 0) {
-                html += `<div style="margin-bottom: 20px;"><div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">⭐ ${t('premium')}</div>`;
+                html += `<div style="margin-bottom: 20px;"><div class="section-label"><svg class="icon icon-sm"><use href="#icon-star"/></svg> ${proName}</div>`;
                 html += proTariffs.map(tariff => {
                     const basePrice = tariff[currencyConfig.field] || 0;
                     const finalPrice = calculateFinalPrice(basePrice);
@@ -2536,7 +3316,7 @@
             }
 
             if (eliteTariffs.length > 0) {
-                html += `<div style="margin-bottom: 20px;"><div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">👑 ${t('elite')}</div>`;
+                html += `<div style="margin-bottom: 20px;"><div class="section-label"><svg class="icon icon-sm"><use href="#icon-crown"/></svg> ${eliteName}</div>`;
                 html += eliteTariffs.map(tariff => {
                     const basePrice = tariff[currencyConfig.field] || 0;
                     const finalPrice = calculateFinalPrice(basePrice);
@@ -2604,10 +3384,15 @@
             proTariffs.sort((a, b) => (a.duration_days || 0) - (b.duration_days || 0));
             eliteTariffs.sort((a, b) => (a.duration_days || 0) - (b.duration_days || 0));
 
+            // Получаем названия тарифов из брендинга
+            const basicName = (branding && branding.tariff_tier_basic_name) ? branding.tariff_tier_basic_name : t('basic');
+            const proName = (branding && branding.tariff_tier_pro_name) ? branding.tariff_tier_pro_name : t('premium');
+            const eliteName = (branding && branding.tariff_tier_elite_name) ? branding.tariff_tier_elite_name : t('elite');
+
             let html = '';
 
             if (basicTariffs.length > 0) {
-                html += `<div style="margin-bottom: 24px;"><div style="font-size: 16px; color: var(--text-primary); margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;"><span>📦</span> ${t('basic')}</div>`;
+                html += `<div style="margin-bottom: 24px;"><div class="section-label" style="font-size: 14px;"><svg class="icon icon-sm"><use href="#icon-zap"/></svg> ${basicName}</div>`;
                 html += basicTariffs.map(tariff => {
                     const price = tariff[currencyConfig.field] || 0;
                     const tariffId = tariff.id || tariff.tariff_id;
@@ -2633,7 +3418,7 @@
             }
 
             if (proTariffs.length > 0) {
-                html += `<div style="margin-bottom: 24px;"><div style="font-size: 16px; color: var(--text-primary); margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;"><span>⭐</span> ${t('premium')}</div>`;
+                html += `<div style="margin-bottom: 24px;"><div class="section-label" style="font-size: 14px;"><svg class="icon icon-sm"><use href="#icon-star"/></svg> ${proName}</div>`;
                 html += proTariffs.map(tariff => {
                     const price = tariff[currencyConfig.field] || 0;
                     const tariffId = tariff.id || tariff.tariff_id;
@@ -2659,7 +3444,7 @@
             }
 
             if (eliteTariffs.length > 0) {
-                html += `<div style="margin-bottom: 24px;"><div style="font-size: 16px; color: var(--text-primary); margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;"><span>👑</span> ${t('elite')}</div>`;
+                html += `<div style="margin-bottom: 24px;"><div class="section-label" style="font-size: 14px;"><svg class="icon icon-sm"><use href="#icon-crown"/></svg> ${eliteName}</div>`;
                 html += eliteTariffs.map(tariff => {
                     const price = tariff[currencyConfig.field] || 0;
                     const tariffId = tariff.id || tariff.tariff_id;
@@ -2710,18 +3495,18 @@
             const paymentMethodsList = document.getElementById('paymentMethodsList');
 
             const paymentNames = {
-                'crystalpay': '💳 CrystalPay',
-                'heleket': '₿ Heleket',
-                'yookassa': '💳 YooKassa',
-                'platega': '💳 Platega',
-                'mulenpay': '💳 Mulenpay',
-                'urlpay': '💳 UrlPay',
-                'telegram_stars': '⭐ Telegram Stars',
-                'monobank': '💳 Monobank',
-                'btcpayserver': '₿ BTCPayServer (Bitcoin)',
-                'tribute': '💳 Tribute',
-                'robokassa': '💳 Robokassa',
-                'freekassa': '💳 Freekassa'
+                'crystalpay': '<svg class="icon"><use href="#icon-credit-card"/></svg> CrystalPay',
+                'heleket': '<svg class="icon"><use href="#icon-shield"/></svg> Heleket',
+                'yookassa': '<svg class="icon"><use href="#icon-credit-card"/></svg> YooKassa',
+                'platega': '<svg class="icon"><use href="#icon-credit-card"/></svg> Platega',
+                'mulenpay': '<svg class="icon"><use href="#icon-credit-card"/></svg> Mulenpay',
+                'urlpay': '<svg class="icon"><use href="#icon-credit-card"/></svg> UrlPay',
+                'telegram_stars': '<svg class="icon"><use href="#icon-star"/></svg> Telegram Stars',
+                'monobank': '<svg class="icon"><use href="#icon-credit-card"/></svg> Monobank',
+                'btcpayserver': '<svg class="icon"><use href="#icon-shield"/></svg> BTCPayServer',
+                'tribute': '<svg class="icon"><use href="#icon-credit-card"/></svg> Tribute',
+                'robokassa': '<svg class="icon"><use href="#icon-credit-card"/></svg> Robokassa',
+                'freekassa': '<svg class="icon"><use href="#icon-credit-card"/></svg> Freekassa'
             };
 
             let html = '';
@@ -2749,9 +3534,9 @@
                     const currencySymbol = currency === 'uah' ? '₴' : currency === 'rub' ? '₽' : '$';
                     
                     html += `
-                        <div class="payment-method" onclick="createPayment('balance')" style="background: ${canAfford ? 'var(--accent-green)' : 'var(--accent-red)'}; opacity: ${canAfford ? 1 : 0.6};">
-                            💳 Оплатить с баланса (${finalPrice.toFixed(2)} ${currencySymbol})
-                            ${!canAfford ? '<br><small>Недостаточно средств</small>' : ''}
+                        <div class="payment-method" onclick="${canAfford ? "createPayment('balance')" : ''}" style="background: ${canAfford ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.1)'}; color: ${canAfford ? 'var(--accent-green)' : 'var(--accent-red)'}; border-color: ${canAfford ? 'var(--accent-green)' : 'var(--accent-red)'}; ${!canAfford ? 'cursor: not-allowed; opacity: 0.7;' : ''}">
+                            <svg class="icon"><use href="#icon-wallet"/></svg>
+                            <span>Оплатить с баланса (${finalPrice.toFixed(2)} ${currencySymbol})${!canAfford ? ' — Недостаточно средств' : ''}</span>
                         </div>
                     `;
                 }
@@ -2995,13 +3780,15 @@
             const code = input.value.trim().toUpperCase();
             
             if (!code) {
-                status.innerHTML = '<span style="color: var(--danger);">Введите промокод</span>';
+                status.innerHTML = `<span style="color: var(--danger);">${t('enterCode')}</span>`;
+                status.style.display = 'block';
                 return;
             }
             
             btn.disabled = true;
             btn.textContent = '...';
             status.innerHTML = '';
+            status.style.display = 'none';
             
             try {
                 const initData = tg.initData || '';
@@ -3014,7 +3801,9 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    status.innerHTML = `<span style="color: var(--success);">${data.message}</span>`;
+                    status.innerHTML = `<span style="color: var(--success);">✓ ${data.message || t('promoActivated')}</span>`;
+                    status.style.display = 'block';
+                    status.className = 'status-message success';
                     input.value = '';
                     // Перезагружаем данные подписки
                     setTimeout(() => {
@@ -3022,14 +3811,18 @@
                     }, 1500);
                 } else {
                     const errorMsg = data.detail?.message || data.message || t('promoError');
-                    status.innerHTML = `<span style="color: var(--danger);">${errorMsg}</span>`;
+                    status.innerHTML = `<span style="color: var(--danger);">✗ ${errorMsg}</span>`;
+                    status.style.display = 'block';
+                    status.className = 'status-message error';
                 }
             } catch (error) {
                 console.error('Ошибка активации промокода:', error);
-                status.innerHTML = `<span style="color: var(--danger);">${t('promoError')}</span>`;
+                status.innerHTML = `<span style="color: var(--danger);">✗ ${t('promoError')}</span>`;
+                status.style.display = 'block';
+                status.className = 'status-message error';
             } finally {
                 btn.disabled = false;
-                btn.textContent = t('ok');
+                btn.innerHTML = `<span id="promoOkBtn">${t('ok')}</span>`;
             }
         }
 
@@ -3285,13 +4078,16 @@
             const code = input.value.trim().toUpperCase();
             
             if (!code) {
-                status.innerHTML = '<span style="color: var(--danger);">Введите промокод</span>';
+                status.innerHTML = `<span style="color: var(--danger);">${t('enterPromoCode')}</span>`;
+                status.style.display = 'block';
+                status.className = 'status-message error';
                 return;
             }
             
             btn.disabled = true;
             btn.textContent = '...';
             status.innerHTML = '';
+            status.style.display = 'none';
             
             try {
                 // Получаем токен через bot/get-token
@@ -3299,7 +4095,9 @@
                 const telegramId = getUserFromInitData(initData);
                 
                 if (!telegramId) {
-                    status.innerHTML = `<span style="color: var(--danger);">${t('errorAuth')}</span>`;
+                    status.innerHTML = `<span style="color: var(--danger);">✗ ${t('errorAuth')}</span>`;
+                    status.style.display = 'block';
+                    status.className = 'status-message error';
                     return;
                 }
                 
@@ -3339,22 +4137,30 @@
                             ? `${checkData.value}%` 
                             : `${checkData.value} ${currentCurrency === 'uah' ? '₴' : currentCurrency === 'rub' ? '₽' : '$'}`;
                         status.innerHTML = `<span style="color: var(--success);">✓ ${t('promoAppliedWithDiscount')} ${code}: ${discountText}</span>`;
+                        status.style.display = 'block';
+                        status.className = 'status-message success';
                         // Перерисовываем тарифы с учетом промокода
                         if (tariffs.length > 0) {
                             renderTariffs();
                         }
                     } else {
-                        status.innerHTML = `<span style="color: var(--warning);">${t('promoDaysActivate')}</span>`;
+                        status.innerHTML = `<span style="color: var(--warning);">⚠ ${t('promoDaysActivate')}</span>`;
+                        status.style.display = 'block';
+                        status.className = 'status-message';
                         appliedPromo = null;
                     }
                 } else {
                     const errorMsg = checkData.message || t('promoInvalid');
-                    status.innerHTML = `<span style="color: var(--danger);">${errorMsg}</span>`;
+                    status.innerHTML = `<span style="color: var(--danger);">✗ ${errorMsg}</span>`;
+                    status.style.display = 'block';
+                    status.className = 'status-message error';
                     appliedPromo = null;
                 }
             } catch (error) {
                 console.error('Ошибка проверки промокода:', error);
-                status.innerHTML = `<span style="color: var(--danger);">${t('errorPromoCheck')}</span>`;
+                status.innerHTML = `<span style="color: var(--danger);">✗ ${t('errorPromoCheck')}</span>`;
+                status.style.display = 'block';
+                status.className = 'status-message error';
                 appliedPromo = null;
             } finally {
                 btn.disabled = false;
@@ -3420,24 +4226,25 @@
             const ticketsList = document.getElementById('ticketsList');
             
             if (tickets.length === 0) {
-                ticketsList.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-secondary);">${t('noTickets')}</div>`;
+                ticketsList.innerHTML = `<div class="text-center text-muted" style="padding: 24px;">${t('noTickets')}</div>`;
                 return;
             }
             
             ticketsList.innerHTML = tickets.map(ticket => {
-                const statusClass = ticket.status === 'CLOSED' ? 'status-inactive' : 'status-active';
+                const isOpen = ticket.status !== 'CLOSED';
                 const statusText = ticket.status === 'CLOSED' ? t('closed') : t('open');
                 const date = new Date(ticket.created_at).toLocaleDateString('ru-RU');
                 return `
-                    <div class="card" style="margin-bottom: 12px; cursor: pointer;" onclick="openTicket(${ticket.id})">
-                        <div style="padding: 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-weight: 600;">${t('ticketNum')}${ticket.id}</span>
-                                <span class="status-badge ${statusClass}">${statusText}</span>
-                            </div>
-                            <div style="color: var(--text-primary); margin-bottom: 4px;">${ticket.subject || 'Без темы'}</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">${date}</div>
+                    <div class="ticket-card" onclick="openTicket(${ticket.id})">
+                        <div class="ticket-header">
+                            <span class="ticket-id">${t('ticketNum')}${ticket.id}</span>
+                            <span class="status-badge ${isOpen ? 'status-active' : 'status-inactive'}">
+                                <span class="status-dot ${isOpen ? 'online' : 'offline'}"></span>
+                                ${statusText}
+                            </span>
                         </div>
+                        <div class="ticket-subject">${ticket.subject || 'Без темы'}</div>
+                        <div class="ticket-date">${date}</div>
                     </div>
                 `;
             }).join('');
@@ -3637,9 +4444,10 @@
         window.toggleTheme = toggleTheme;
     </script>
 
-    <!-- Плавающая кнопка подключения (скрыта, используется кнопка в блоке статуса) -->
+    <!-- Floating Connect Button (hidden, button in status block is used) -->
     <button id="floatingConnectBtn" class="btn floating-button hidden" onclick="handleConnectClick(event)" style="display: none;">
-        🚀 Подключиться
+        <svg class="icon"><use href="#icon-rocket"/></svg>
+        Подключиться
     </button>
 </body>
 </html>

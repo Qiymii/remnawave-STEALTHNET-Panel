@@ -60,7 +60,8 @@ def add_referral_commission(user, amount_usd, is_tariff_purchase=True):
             return
         
         # Получаем процент реферала (индивидуальный или дефолтный)
-        referral_percent = referrer.referral_percent if referrer.referral_percent else referral_settings.default_referral_percent
+        # Если у реферера установлен индивидуальный процент - используем его, иначе глобальный
+        referral_percent = referrer.referral_percent if referrer.referral_percent is not None else referral_settings.default_referral_percent
         
         # Вычисляем комиссию
         commission_usd = (amount_usd * referral_percent) / 100.0
@@ -177,8 +178,8 @@ def process_successful_payment(payment, user, tariff):
         if tariff.traffic_limit_bytes and tariff.traffic_limit_bytes > 0:
             patch_payload["trafficLimitBytes"] = tariff.traffic_limit_bytes
             patch_payload["trafficLimitStrategy"] = "NO_RESET"
-            
-            # Устанавливаем лимит устройств, если он указан в тарифе
+        
+        # Устанавливаем лимит устройств, если он указан в тарифе
         if hasattr(tariff, 'hwid_device_limit') and tariff.hwid_device_limit is not None and tariff.hwid_device_limit > 0:
             patch_payload["hwidDeviceLimit"] = tariff.hwid_device_limit
         

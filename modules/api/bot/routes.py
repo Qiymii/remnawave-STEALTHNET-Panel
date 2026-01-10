@@ -144,60 +144,87 @@ def bot_register():
             return jsonify({"message": "RemnaWave API not configured (API_URL or ADMIN_TOKEN missing)"}), 500
         
         try:
-            # Бонусные дни для реферала
-            bonus_days = 0
-            if referrer:
-                ref_settings = ReferralSetting.query.first()
-                bonus_days = ref_settings.invitee_bonus_days if ref_settings else 7
-            
-            expire_date = (datetime.now(timezone.utc) + timedelta(days=bonus_days)).isoformat()
-            clean_username = email.replace("@", "_").replace(".", "_")
-            
-            payload_create = {
-                "email": email,
-                "password": password,
-                "username": clean_username,
-                "expireAt": expire_date
-            }
-            
-            # Добавляем activeInternalSquads только если есть реферал и DEFAULT_SQUAD_ID
-            if referrer and DEFAULT_SQUAD_ID:
-                payload_create["activeInternalSquads"] = [DEFAULT_SQUAD_ID]
-            
-            # Добавляем telegramId только если он есть, и как число (не строку)
+            # Сначала проверяем, существует ли пользователь в RemnaWave по telegramId
+            existing_remnawave_user = None
             if telegram_id:
                 try:
-                    # Пробуем конвертировать в int, если это возможно
                     telegram_id_int = int(telegram_id) if isinstance(telegram_id, (str, int)) else telegram_id
-                    payload_create["telegramId"] = telegram_id_int
-                except (ValueError, TypeError):
-                    # Если не получается конвертировать, отправляем как строку
-                    payload_create["telegramId"] = str(telegram_id)
+                    check_resp = requests.get(
+                        f"{API_URL}/api/users/by-telegram-id/{telegram_id_int}",
+                        headers={"Authorization": f"Bearer {ADMIN_TOKEN}"},
+                        timeout=15
+                    )
+                    if check_resp.status_code == 200:
+                        check_data = check_resp.json()
+                        # API может вернуть response с пользователем или массив пользователей
+                        if check_data.get('response'):
+                            existing_remnawave_user = check_data['response']
+                            if isinstance(existing_remnawave_user, list) and len(existing_remnawave_user) > 0:
+                                existing_remnawave_user = existing_remnawave_user[0]
+                        print(f"Found existing user in RemnaWave by telegramId: {existing_remnawave_user.get('uuid') if existing_remnawave_user else 'None'}")
+                except Exception as e:
+                    print(f"Error checking existing user by telegramId: {e}")
             
-            print(f"Creating user in RemnaWave with payload: {payload_create}")
-            
-            resp = requests.post(
-                f"{API_URL}/api/users",
-                headers={"Authorization": f"Bearer {ADMIN_TOKEN}"},
-                json=payload_create,
-                timeout=30
-            )
-            
-            if resp.status_code != 200 and resp.status_code != 201:
-                error_text = resp.text[:500] if hasattr(resp, 'text') else 'No error details'
-                print(f"RemnaWave API Error: Status {resp.status_code}, Response: {error_text}")
-                try:
-                    error_json = resp.json()
-                    error_detail = error_json.get('message') or error_json.get('error') or error_text
-                except:
-                    error_detail = error_text
-                raise requests.exceptions.HTTPError(f"{resp.status_code} Client Error: {error_detail} for url: {resp.url}", response=resp)
-            
-            resp.raise_for_status()
-            remnawave_uuid = resp.json().get('response', {}).get('uuid')
-            
-            if not remnawave_uuid:
-                return jsonify({"message": "Provider Error: Failed to create user in RemnaWave (no UUID returned)"}), 500
+            # Если пользователь уже существует в RemnaWave - используем его UUID
+            if existing_remnawave_user and existing_remnawave_user.get('uuid'):
+                remnawave_uuid = existing_remnawave_user.get('uuid')
+                print(f"Using existing RemnaWave user UUID: {remnawave_uuid}")
+            else:
+                # Пользователь не найден - создаём нового
+                # Бонусные дни для реферала
+                bonus_days = 0
+                if referrer:
+                    ref_settings = ReferralSetting.query.first()
+                    bonus_days = ref_settings.invitee_bonus_days if ref_settings else 7
+                
+                expire_date = (datetime.now(timezone.utc) + timedelta(days=bonus_days)).isoformat()
+                clean_username = email.replace("@", "_").replace(".", "_")
+                
+                payload_create = {
+                    "email": email,
+                    "password": password,
+                    "username": clean_username,
+                    "expireAt": expire_date
+                }
+                
+                # Добавляем activeInternalSquads только если есть реферал и DEFAULT_SQUAD_ID
+                if referrer and DEFAULT_SQUAD_ID:
+                    payload_create["activeInternalSquads"] = [DEFAULT_SQUAD_ID]
+                
+                # Добавляем telegramId только если он есть, и как число (не строку)
+                if telegram_id:
+                    try:
+                        # Пробуем конвертировать в int, если это возможно
+                        telegram_id_int = int(telegram_id) if isinstance(telegram_id, (str, int)) else telegram_id
+                        payload_create["telegramId"] = telegram_id_int
+                    except (ValueError, TypeError):
+                        # Если не получается конвертировать, отправляем как строку
+                        payload_create["telegramId"] = str(telegram_id)
+                
+                print(f"Creating user in RemnaWave with payload: {payload_create}")
+                
+                resp = requests.post(
+                    f"{API_URL}/api/users",
+                    headers={"Authorization": f"Bearer {ADMIN_TOKEN}"},
+                    json=payload_create,
+                    timeout=30
+                )
+                
+                if resp.status_code != 200 and resp.status_code != 201:
+                    error_text = resp.text[:500] if hasattr(resp, 'text') else 'No error details'
+                    print(f"RemnaWave API Error: Status {resp.status_code}, Response: {error_text}")
+                    try:
+                        error_json = resp.json()
+                        error_detail = error_json.get('message') or error_json.get('error') or error_text
+                    except:
+                        error_detail = error_text
+                    raise requests.exceptions.HTTPError(f"{resp.status_code} Client Error: {error_detail} for url: {resp.url}", response=resp)
+                
+                resp.raise_for_status()
+                remnawave_uuid = resp.json().get('response', {}).get('uuid')
+                
+                if not remnawave_uuid:
+                    return jsonify({"message": "Provider Error: Failed to create user in RemnaWave (no UUID returned)"}), 500
                 
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
             # Обработка сетевых ошибок (DNS, таймауты, недоступность сервера)

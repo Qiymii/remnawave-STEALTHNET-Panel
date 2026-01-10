@@ -35,7 +35,7 @@ from modules.models.bot_config import BotConfig
 from modules.models.referral import ReferralSetting
 from modules.models.tariff_feature import TariffFeatureSetting
 from modules.models.currency import CurrencyRate
-from modules.models.auto_broadcast import AutoBroadcastMessage
+from modules.models.auto_broadcast import AutoBroadcastMessage, AutoBroadcastSettings
 
 app = get_app()
 db = get_db()
@@ -2099,6 +2099,181 @@ def update_promo(current_admin, id):
         }), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+
+
+# ============================================================================
+# AUTO BROADCAST MESSAGES
+# ============================================================================
+
+@app.route('/api/admin/auto-broadcast-messages', methods=['GET', 'POST'])
+@admin_required
+def auto_broadcast_messages(current_admin):
+    """Управление автоматическими сообщениями"""
+    try:
+        if request.method == 'GET':
+            # Получаем все автосообщения
+            messages = AutoBroadcastMessage.query.all()
+            result = {}
+            for msg in messages:
+                result[msg.message_type] = {
+                    'id': msg.id,
+                    'message_type': msg.message_type,
+                    'message_text': msg.message_text,
+                    'enabled': msg.enabled,
+                    'bot_type': msg.bot_type,
+                    'button_text': msg.button_text,
+                    'button_url': msg.button_url,
+                    'button_action': msg.button_action,
+                    'created_at': msg.created_at.isoformat() if msg.created_at else None,
+                    'updated_at': msg.updated_at.isoformat() if msg.updated_at else None
+                }
+            return jsonify(result), 200
+        
+        elif request.method == 'POST':
+            # Обновляем или создаем автосообщения
+            data = request.json
+            messages_data = data.get('messages', {})
+            
+            # Список всех возможных типов сообщений
+            message_types = [
+                'subscription_expiring_3days',
+                'trial_expiring',
+                'no_subscription',
+                'trial_not_used',
+                'trial_active'
+            ]
+            
+            for msg_type in message_types:
+                msg_data = messages_data.get(msg_type)
+                if not msg_data:
+                    continue
+                
+                # Ищем существующее сообщение
+                existing_msg = AutoBroadcastMessage.query.filter_by(message_type=msg_type).first()
+                
+                if existing_msg:
+                    # Обновляем существующее
+                    if 'message_text' in msg_data:
+                        existing_msg.message_text = msg_data['message_text']
+                    if 'enabled' in msg_data:
+                        existing_msg.enabled = bool(msg_data['enabled'])
+                    if 'bot_type' in msg_data:
+                        existing_msg.bot_type = msg_data['bot_type']
+                    # Обновляем кнопку
+                    if 'button_text' in msg_data:
+                        existing_msg.button_text = msg_data['button_text'] or None
+                    if 'button_url' in msg_data:
+                        existing_msg.button_url = msg_data['button_url'] or None
+                    if 'button_action' in msg_data:
+                        existing_msg.button_action = msg_data['button_action'] or None
+                else:
+                    # Создаем новое
+                    default_texts = {
+                        'subscription_expiring_3days': 'Подписка заканчивается через 3 дня, не забудьте продлить',
+                        'trial_expiring': 'Тестовый период заканчивается, не желаете купить подписку?',
+                        'no_subscription': '🔔 Вы ещё не оформили VPN? Не теряйте время — подключитесь сейчас и защитите свой трафик!',
+                        'trial_not_used': '🚀 Бесплатная пробная подписка ждёт вас!\n\nМы заметили, что вы ещё не воспользовались пробным доступом. Активируйте его прямо сейчас и оцените все преимущества VPN! 🔥',
+                        'trial_active': '🎉 Ваш пробный доступ ещё активен!\n\nНе упустите возможность протестировать VPN бесплатно! Никаких обязательств — просто подключитесь и наслаждайтесь безопасным интернетом. 🌍'
+                    }
+                    
+                    new_msg = AutoBroadcastMessage(
+                        message_type=msg_type,
+                        message_text=msg_data.get('message_text', default_texts.get(msg_type, '')),
+                        enabled=msg_data.get('enabled', True),
+                        bot_type=msg_data.get('bot_type', 'both'),
+                        button_text=msg_data.get('button_text') or None,
+                        button_url=msg_data.get('button_url') or None,
+                        button_action=msg_data.get('button_action') or None
+                    )
+                    db.session.add(new_msg)
+            
+            db.session.commit()
+            
+            # Возвращаем обновленные сообщения
+            messages = AutoBroadcastMessage.query.all()
+            result = {}
+            for msg in messages:
+                result[msg.message_type] = {
+                    'id': msg.id,
+                    'message_type': msg.message_type,
+                    'message_text': msg.message_text,
+                    'enabled': msg.enabled,
+                    'bot_type': msg.bot_type,
+                    'button_text': msg.button_text,
+                    'button_url': msg.button_url,
+                    'button_action': msg.button_action,
+                    'created_at': msg.created_at.isoformat() if msg.created_at else None,
+                    'updated_at': msg.updated_at.isoformat() if msg.updated_at else None
+                }
+            
+            return jsonify(result), 200
+            
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+
+
+@app.route('/api/admin/auto-broadcast-settings', methods=['GET', 'POST'])
+@admin_required
+def auto_broadcast_settings_endpoint(current_admin):
+    """Управление настройками планировщика автоматической рассылки"""
+    try:
+        # Получаем или создаем настройки
+        settings = AutoBroadcastSettings.query.first()
+        if not settings:
+            settings = AutoBroadcastSettings(
+                enabled=True,
+                hours='9,14,19'
+            )
+            db.session.add(settings)
+            db.session.commit()
+        
+        if request.method == 'GET':
+            return jsonify({
+                'enabled': settings.enabled,
+                'hours': settings.hours,
+                'updated_at': settings.updated_at.isoformat() if settings.updated_at else None
+            }), 200
+        
+        elif request.method == 'POST':
+            data = request.json
+            
+            if 'enabled' in data:
+                settings.enabled = bool(data['enabled'])
+            if 'hours' in data:
+                # Валидация часов
+                hours_str = data['hours'].strip()
+                try:
+                    hours = [int(h.strip()) for h in hours_str.split(',')]
+                    # Проверяем, что все часы в диапазоне 0-23
+                    for h in hours:
+                        if h < 0 or h > 23:
+                            return jsonify({"message": f"Час {h} вне диапазона 0-23"}), 400
+                    settings.hours = hours_str
+                except ValueError:
+                    return jsonify({"message": "Неверный формат часов. Используйте числа через запятую, например: 9,14,19"}), 400
+            
+            db.session.commit()
+            
+            # Перезапускаем планировщик с новыми настройками
+            try:
+                from app import restart_scheduler
+                restart_scheduler()
+            except Exception as e:
+                print(f"Warning: Could not restart scheduler: {e}")
+            
+            return jsonify({
+                'message': 'Настройки сохранены',
+                'enabled': settings.enabled,
+                'hours': settings.hours,
+                'updated_at': settings.updated_at.isoformat() if settings.updated_at else None
+            }), 200
+            
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Error: {str(e)}"}), 500
 
 
 # ============================================================================

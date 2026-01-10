@@ -21,7 +21,7 @@ class User(db.Model):
     is_verified = db.Column(db.Boolean, default=False)
     verification_token = db.Column(db.String(100), nullable=True)
     balance = db.Column(db.Float, default=0.0)
-    referral_percent = db.Column(db.Float, default=10.0)  # Процент реферала (по умолчанию 10%)
+    referral_percent = db.Column(db.Float, nullable=True, default=None)  # Процент реферала (None = использовать глобальный default_referral_percent)
     preferred_lang = db.Column(db.String(5), default='ru')
     preferred_currency = db.Column(db.String(5), default='uah')
     telegram_id = db.Column(db.String(50), unique=True, nullable=True)

@@ -677,6 +677,37 @@ class ClientBotAPI:
     def __init__(self, api_url: str):
         self.api_url = api_url.rstrip('/')
         self.session = requests.Session()
+        
+        # Настройка connection pooling для переиспользования соединений
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+        
+        # Настройка retry стратегии
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+            raise_on_status=False
+        )
+        
+        # Настройка HTTP adapter с connection pooling
+        adapter = HTTPAdapter(
+            pool_connections=10,
+            pool_maxsize=20,
+            max_retries=retry_strategy,
+            pool_block=False
+        )
+        
+        # Применяем adapter для HTTP и HTTPS
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+        
+        # Настройка keep-alive заголовков
+        self.session.headers.update({
+            'Connection': 'keep-alive',
+            'Keep-Alive': 'timeout=60, max=100'
+        })
     
     def get_user_by_telegram_id(self, telegram_id: int) -> Optional[dict]:
         """Получить пользователя по Telegram ID через API бота или создать JWT"""
@@ -747,34 +778,88 @@ class ClientBotAPI:
         return None
     
     def get_user_data(self, token: str, force_refresh: bool = False) -> Optional[dict]:
-        """Получить данные пользователя"""
-        try:
-            headers = {
-                "Authorization": f"Bearer {token}",
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache",
-                "Expires": "0"
-            }
-            # Добавляем timestamp для предотвращения кэширования
-            url = f"{self.api_url}/api/client/me"
-            if force_refresh:
-                url += f"?_t={int(datetime.now().timestamp() * 1000)}"
-            
-            response = self.session.get(
-                url,
-                headers=headers,
-                timeout=10
-            )
-            if response.status_code == 200:
-                data = response.json()
-                user_data = data.get("response") or data
-                # Логируем для отладки
-                if user_data:
-                    logger.debug(f"User data keys: {list(user_data.keys())[:15]}")
-                    logger.debug(f"User preferred_lang: {user_data.get('preferred_lang')}, preferred_currency: {user_data.get('preferred_currency')}")
-                return user_data
-        except Exception as e:
-            logger.error(f"Ошибка получения данных пользователя: {e}")
+        """Получить данные пользователя с retry логикой"""
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+        # Добавляем timestamp для предотвращения кэширования
+        url = f"{self.api_url}/api/client/me"
+        if force_refresh:
+            url += f"?_t={int(datetime.now().timestamp() * 1000)}"
+        
+        # Retry логика с экспоненциальной задержкой
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.get(
+                    url,
+                    headers=headers,
+                    timeout=15  # Увеличено до 15 секунд
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    user_data = data.get("response") or data
+                    # Логируем для отладки
+                    if user_data:
+                        logger.debug(f"User data keys: {list(user_data.keys())[:15]}")
+                        logger.debug(f"User preferred_lang: {user_data.get('preferred_lang')}, preferred_currency: {user_data.get('preferred_currency')}")
+                    return user_data
+                elif response.status_code == 401:
+                    # Не валидный токен, не повторяем
+                    logger.warning(f"Unauthorized access attempt (401) for get_user_data")
+                    return None
+                else:
+                    logger.warning(f"HTTP {response.status_code} при получении данных пользователя (попытка {attempt + 1}/{max_retries})")
+            except requests.exceptions.Timeout:
+                logger.warning(f"Timeout при получении данных пользователя (попытка {attempt + 1}/{max_retries})")
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(2 ** attempt)  # Экспоненциальная задержка: 1s, 2s, 4s
+                else:
+                    logger.error(f"Превышено максимальное количество попыток при получении данных пользователя")
+            except requests.exceptions.ConnectionError as e:
+                logger.warning(f"Ошибка соединения при получении данных пользователя (попытка {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(2 ** attempt)
+                    # Пытаемся пересоздать соединение
+                    try:
+                        self.session.close()
+                        self.session = requests.Session()
+                        # Повторно применяем adapter
+                        from requests.adapters import HTTPAdapter
+                        from urllib3.util.retry import Retry
+                        retry_strategy = Retry(
+                            total=3,
+                            backoff_factor=1,
+                            status_forcelist=[429, 500, 502, 503, 504],
+                            allowed_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+                            raise_on_status=False
+                        )
+                        adapter = HTTPAdapter(
+                            pool_connections=10,
+                            pool_maxsize=20,
+                            max_retries=retry_strategy,
+                            pool_block=False
+                        )
+                        self.session.mount("http://", adapter)
+                        self.session.mount("https://", adapter)
+                        self.session.headers.update({
+                            'Connection': 'keep-alive',
+                            'Keep-Alive': 'timeout=60, max=100'
+                        })
+                    except Exception as reset_error:
+                        logger.error(f"Ошибка при пересоздании сессии: {reset_error}")
+                else:
+                    logger.error(f"Превышено максимальное количество попыток при ошибке соединения")
+            except Exception as e:
+                logger.error(f"Неожиданная ошибка при получении данных пользователя: {e}")
+                if attempt == max_retries - 1:
+                    return None
+        
         return None
     
     def get_tariffs(self) -> list:
@@ -1142,6 +1227,7 @@ TRANSLATIONS = {
         'unlimited_traffic_full': 'Безлимитный трафик',
         'use_login_password': 'Используйте этот логин и пароль для входа на сайте',
         'select_tariff_type': 'Выберите тип тарифа',
+        # Эти значения используются как fallback, основное название берется из брендинга
         'basic_tier': 'Базовый',
         'pro_tier': 'Премиум',
         'elite_tier': 'Элитный',
@@ -2311,6 +2397,12 @@ async def show_tariffs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             basic_tariffs.append(tariff)
     
+    # Получаем названия тарифов из брендинга
+    branding = api.get_branding()
+    basic_name = branding.get("tariff_tier_basic_name", "Базовый") or "Базовый"
+    pro_name = branding.get("tariff_tier_pro_name", "Премиум") or "Премиум"
+    elite_name = branding.get("tariff_tier_elite_name", "Элитный") or "Элитный"
+    
     # Формируем сообщение с выбором типа тарифа
     text = "💎 **Тарифные планы**\n"
     text += "━━━━━━━━━━━━━━━\n"
@@ -2318,26 +2410,26 @@ async def show_tariffs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Показываем краткую информацию о каждом типе в одну строку
     if basic_tariffs:
         min_price = min(t.get(currency_config["field"], 0) for t in basic_tariffs)
-        text += f"📦 Базовый |💰От {min_price:.0f} {symbol} |📦 {len(basic_tariffs)} вариантов\n"
+        text += f"📦 {basic_name} |💰От {min_price:.0f} {symbol}\n"
     
     if pro_tariffs:
         min_price = min(t.get(currency_config["field"], 0) for t in pro_tariffs)
-        text += f"⭐️ Премиум |💰От {min_price:.0f} {symbol} |📦 {len(pro_tariffs)} вариантов\n"
+        text += f"⭐️ {pro_name} |💰От {min_price:.0f} {symbol}\n"
     
     if elite_tariffs:
         min_price = min(t.get(currency_config["field"], 0) for t in elite_tariffs)
-        text += f"👑 Элитный |💰От {min_price:.0f} {symbol} |📦 {len(elite_tariffs)} вариантов\n"
+        text += f"👑 {elite_name} |💰От {min_price:.0f} {symbol}\n"
     
     text += "━━━━━━━━━━━━━━━\n"
     
     # Кнопки выбора типа тарифа
     keyboard = []
     if basic_tariffs:
-        keyboard.append([InlineKeyboardButton("📦 Базовый", callback_data="tier_basic")])
+        keyboard.append([InlineKeyboardButton(f"📦 {basic_name}", callback_data="tier_basic")])
     if pro_tariffs:
-        keyboard.append([InlineKeyboardButton("⭐ Премиум", callback_data="tier_pro")])
+        keyboard.append([InlineKeyboardButton(f"⭐ {pro_name}", callback_data="tier_pro")])
     if elite_tariffs:
-        keyboard.append([InlineKeyboardButton("👑 Элитный", callback_data="tier_elite")])
+        keyboard.append([InlineKeyboardButton(f"👑 {elite_name}", callback_data="tier_elite")])
     
     keyboard.append([
         InlineKeyboardButton("🔙 Главное меню", callback_data="main_menu")
@@ -2393,12 +2485,18 @@ async def show_tier_tariffs(update: Update, context: ContextTypes.DEFAULT_TYPE, 
     price_field = currency_config["field"]
     symbol = currency_config["symbol"]
     
+    # Получаем названия тарифов из брендинга
+    branding = api.get_branding()
+    basic_name = branding.get("tariff_tier_basic_name", "Базовый") or "Базовый"
+    pro_name = branding.get("tariff_tier_pro_name", "Премиум") or "Премиум"
+    elite_name = branding.get("tariff_tier_elite_name", "Элитный") or "Элитный"
+    
     # Фильтруем тарифы по tier
     tier_tariffs = []
     tier_names = {
-        "basic": "📦 Базовый",
-        "pro": "⭐ Премиум",
-        "elite": "👑 Элитный"
+        "basic": f"📦 {basic_name}",
+        "pro": f"⭐ {pro_name}",
+        "elite": f"👑 {elite_name}"
     }
     
     for tariff in tariffs:
@@ -2434,7 +2532,7 @@ async def show_tier_tariffs(update: Update, context: ContextTypes.DEFAULT_TYPE, 
     
     # Формируем сообщение
     tier_name = tier_names.get(tier, tier.capitalize())
-    text = f"{tier_name} **тарифы**\n"
+    text = f"{tier_name}\n"
     text += "━━━━━━━━━━━━━━━\n"
     
     # Показываем функции тарифа, если есть
@@ -2469,7 +2567,7 @@ async def show_tier_tariffs(update: Update, context: ContextTypes.DEFAULT_TYPE, 
         duration = tariff.get("duration_days", 0)
         per_day = price / duration if duration > 0 else price
         
-        text += f"📦 **{name}** | 💰 {price:.0f} {symbol} | 📊 {per_day:.2f} {symbol}/день | ⏱️ {duration} дней\n\n"
+        text += f"📦 {name} | 💰 {price:.0f} {symbol} | 📊 {per_day:.2f} {symbol}/день | ⏱️ {duration} дней\n"
     
     text += "━━━━━━━━━━━━━━━\n"
     

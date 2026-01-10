@@ -270,7 +270,7 @@ def miniapp_activate_trial():
         resp = requests.patch(
             f"{os.getenv('API_URL')}/api/users",
             headers={"Authorization": f"Bearer {os.getenv('ADMIN_TOKEN')}"},
-            json={"uuid": user.remnawave_uuid, "expireAt": new_exp, "activeInternalSquads": [trial_squad_id]},
+            json={"uuid": user.remnawave_uuid, "expireAt": new_exp, "activeInternalSquads": [trial_squad_id], "hwidDeviceLimit": 3},
             timeout=10
         )
 
@@ -1389,6 +1389,13 @@ def miniapp_configs():
                 status='PAID'
             ).order_by(Payment.created_at.desc()).first()
             
+            # Получаем названия тарифов из брендинга
+            from modules.models.branding import BrandingSetting
+            branding = BrandingSetting.query.first()
+            basic_name = getattr(branding, 'tariff_tier_basic_name', None) or 'Базовый'
+            pro_name = getattr(branding, 'tariff_tier_pro_name', None) or 'Премиум'
+            elite_name = getattr(branding, 'tariff_tier_elite_name', None) or 'Элитный'
+            
             tariff_name = "Основной конфиг"
             tariff_tier = None
             tariff_duration = None
@@ -1404,9 +1411,9 @@ def miniapp_configs():
                     # Иначе используем name, но проверяем, не содержит ли он период
                     if tariff.tier:
                         tier_names = {
-                            'basic': 'Базовый',
-                            'pro': 'Премиум',
-                            'elite': 'Элитный'
+                            'basic': basic_name,
+                            'pro': pro_name,
+                            'elite': elite_name
                         }
                         tariff_name = tier_names.get(tariff.tier.lower(), tariff.tier.capitalize())
                     else:
@@ -1422,13 +1429,13 @@ def miniapp_configs():
                             # Если name содержит период, определяем tier по duration_days
                             if tariff.duration_days >= 180:
                                 tariff_tier = 'elite'
-                                tariff_name = 'Элитный'
+                                tariff_name = elite_name
                             elif tariff.duration_days >= 90:
                                 tariff_tier = 'pro'
-                                tariff_name = 'Премиум'
+                                tariff_name = pro_name
                             else:
                                 tariff_tier = 'basic'
-                                tariff_name = 'Базовый'
+                                tariff_name = basic_name
                         else:
                             tariff_name = tariff.name
                     tariff_duration = tariff.duration_days
@@ -1515,7 +1522,8 @@ def miniapp_referrals_info():
         ref_settings = get_referral_settings()
         referral_type = getattr(ref_settings, 'referral_type', 'DAYS') if ref_settings else 'DAYS'
         default_referral_percent = getattr(ref_settings, 'default_referral_percent', 10.0) if ref_settings else 10.0
-        user_referral_percent = user.referral_percent if user.referral_percent else default_referral_percent
+        # Если у пользователя установлен индивидуальный процент - используем его, иначе глобальный
+        user_referral_percent = user.referral_percent if user.referral_percent is not None else default_referral_percent
         
         # Информация в зависимости от типа системы
         referral_info = {}
@@ -2268,6 +2276,13 @@ def miniapp_payments_history():
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response, 404
         
+        # Получаем названия тарифов из брендинга
+        from modules.models.branding import BrandingSetting
+        branding = BrandingSetting.query.first()
+        basic_name = getattr(branding, 'tariff_tier_basic_name', None) or 'Базовый'
+        pro_name = getattr(branding, 'tariff_tier_pro_name', None) or 'Премиум'
+        elite_name = getattr(branding, 'tariff_tier_elite_name', None) or 'Элитный'
+        
         # Получаем платежи пользователя
         payments = Payment.query.filter_by(user_id=user.id).order_by(Payment.created_at.desc()).limit(50).all()
         
@@ -2279,9 +2294,9 @@ def miniapp_payments_history():
                 # Используем tier для отображения (Basic, Pro, Elite), если он есть
                 if tariff.tier:
                     tier_names = {
-                        'basic': 'Базовый',
-                        'pro': 'Премиум',
-                        'elite': 'Элитный'
+                        'basic': basic_name,
+                        'pro': pro_name,
+                        'elite': elite_name
                     }
                     tariff_name = tier_names.get(tariff.tier.lower(), tariff.tier.capitalize())
                 else:
@@ -2296,11 +2311,11 @@ def miniapp_payments_history():
                     if has_period:
                         # Если name содержит период, определяем tier по duration_days
                         if tariff.duration_days >= 180:
-                            tariff_name = 'Элитный'
+                            tariff_name = elite_name
                         elif tariff.duration_days >= 90:
-                            tariff_name = 'Премиум'
+                            tariff_name = pro_name
                         else:
-                            tariff_name = 'Базовый'
+                            tariff_name = basic_name
                     else:
                         tariff_name = tariff.name
             
@@ -2324,5 +2339,396 @@ def miniapp_payments_history():
         import traceback
         traceback.print_exc()
         response = jsonify({"payments": []})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+
+
+# ============================================================================
+# КАЗИНО (Колесо Фортуны)
+# ============================================================================
+
+import random
+from modules.models.casino import CasinoGame, CasinoStats
+
+def get_casino_config():
+    """Получить конфигурацию казино из ENV"""
+    return {
+        'enabled': os.environ.get('CASINO_ENABLED', 'false').lower() == 'true',
+        'min_bet': int(os.environ.get('CASINO_MIN_BET', '1')),
+        'max_bet': int(os.environ.get('CASINO_MAX_BET', '30')),
+        'max_games_per_day': int(os.environ.get('CASINO_MAX_GAMES_PER_DAY', '10')),
+        'chances': {
+            0: int(os.environ.get('CASINO_CHANCE_X0', '40')),
+            0.5: int(os.environ.get('CASINO_CHANCE_X05', '15')),
+            1: int(os.environ.get('CASINO_CHANCE_X1', '15')),
+            1.5: int(os.environ.get('CASINO_CHANCE_X15', '12')),
+            2: int(os.environ.get('CASINO_CHANCE_X2', '10')),
+            3: int(os.environ.get('CASINO_CHANCE_X3', '5')),
+            5: int(os.environ.get('CASINO_CHANCE_X5', '3')),
+        }
+    }
+
+
+def spin_wheel(chances):
+    """Крутит колесо и возвращает множитель"""
+    # Создаём список секторов с учётом шансов
+    sectors = []
+    for multiplier, chance in chances.items():
+        sectors.extend([multiplier] * chance)
+    
+    # Перемешиваем и выбираем случайный
+    random.shuffle(sectors)
+    return random.choice(sectors)
+
+
+def get_user_days_remaining(user):
+    """Получить количество оставшихся дней подписки"""
+    if not user or not user.remnawave_uuid:
+        return 0
+    
+    try:
+        api_url = os.environ.get('API_URL', '')
+        admin_token = os.environ.get('ADMIN_TOKEN', '')
+        
+        response = requests.get(
+            f"{api_url}/api/users/{user.remnawave_uuid}",
+            headers={"Authorization": f"Bearer {admin_token}"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json().get('response', {})
+            expire_at = data.get('expireAt')
+            if expire_at:
+                expire_date = datetime.fromisoformat(expire_at.replace('Z', '+00:00'))
+                now = datetime.now(timezone.utc)
+                days = (expire_date - now).days
+                return max(0, days)
+    except:
+        pass
+    
+    return 0
+
+
+def update_user_subscription(user, days_delta):
+    """Обновить подписку пользователя (добавить/убавить дни)"""
+    if not user or not user.remnawave_uuid:
+        return False
+    
+    try:
+        api_url = os.environ.get('API_URL', '')
+        admin_token = os.environ.get('ADMIN_TOKEN', '')
+        
+        # Получаем текущую дату окончания
+        response = requests.get(
+            f"{api_url}/api/users/{user.remnawave_uuid}",
+            headers={"Authorization": f"Bearer {admin_token}"},
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            return False
+        
+        data = response.json().get('response', {})
+        current_expire = data.get('expireAt')
+        
+        if current_expire:
+            expire_date = datetime.fromisoformat(current_expire.replace('Z', '+00:00'))
+        else:
+            expire_date = datetime.now(timezone.utc)
+        
+        # Добавляем/убавляем дни
+        new_expire = expire_date + timedelta(days=days_delta)
+        
+        # Обновляем через API (правильный формат - uuid в теле запроса)
+        update_response = requests.patch(
+            f"{api_url}/api/users",
+            headers={
+                "Authorization": f"Bearer {admin_token}",
+                "Content-Type": "application/json"
+            },
+            json={"uuid": user.remnawave_uuid, "expireAt": new_expire.isoformat()},
+            timeout=10
+        )
+        
+        if update_response.status_code != 200:
+            print(f"Error updating subscription: Status {update_response.status_code}, Response: {update_response.text[:200]}")
+        
+        return update_response.status_code == 200
+    except Exception as e:
+        print(f"Error updating subscription: {e}")
+        return False
+
+
+@app.route('/miniapp/casino/config', methods=['GET', 'POST', 'OPTIONS'])
+def casino_config():
+    """Получить конфигурацию казино"""
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', '*')
+        return response, 200
+    
+    config = get_casino_config()
+    
+    # Преобразуем шансы в массив для фронтенда
+    wheel_sectors = [
+        {'multiplier': 0, 'label': 'x0', 'color': '#ff4444', 'chance': config['chances'][0]},
+        {'multiplier': 0.5, 'label': 'x0.5', 'color': '#ff8844', 'chance': config['chances'][0.5]},
+        {'multiplier': 1, 'label': 'x1', 'color': '#ffbb44', 'chance': config['chances'][1]},
+        {'multiplier': 1.5, 'label': 'x1.5', 'color': '#88cc44', 'chance': config['chances'][1.5]},
+        {'multiplier': 2, 'label': 'x2', 'color': '#44cc88', 'chance': config['chances'][2]},
+        {'multiplier': 3, 'label': 'x3', 'color': '#44aacc', 'chance': config['chances'][3]},
+        {'multiplier': 5, 'label': 'x5', 'color': '#aa44cc', 'chance': config['chances'][5]},
+    ]
+    
+    response = jsonify({
+        'enabled': config['enabled'],
+        'min_bet': config['min_bet'],
+        'max_bet': config['max_bet'],
+        'max_games_per_day': config['max_games_per_day'],
+        'wheel_sectors': wheel_sectors
+    })
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
+
+
+@app.route('/miniapp/casino/play', methods=['POST', 'OPTIONS'])
+def casino_play():
+    """Играть в казино"""
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', '*')
+        return response, 200
+    
+    config = get_casino_config()
+    
+    if not config['enabled']:
+        response = jsonify({'error': 'Казино отключено'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 400
+    
+    try:
+        data = request.json or {}
+        init_data = data.get('initData', '')
+        bet_days = int(data.get('bet', 1))
+        
+        # Парсим данные пользователя
+        telegram_id, user_data = parse_telegram_init_data(init_data)
+        
+        if not telegram_id:
+            response = jsonify({'error': 'Не авторизован'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 401
+        
+        # Находим пользователя
+        user = User.query.filter_by(telegram_id=str(telegram_id)).first()
+        if not user:
+            response = jsonify({'error': 'Пользователь не найден'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 404
+        
+        # Проверяем ставку
+        if bet_days < config['min_bet'] or bet_days > config['max_bet']:
+            response = jsonify({'error': f'Ставка должна быть от {config["min_bet"]} до {config["max_bet"]} дней'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # Проверяем лимит игр в день
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        games_today = CasinoGame.query.filter(
+            CasinoGame.user_id == user.id,
+            CasinoGame.created_at >= today_start
+        ).count()
+        
+        if games_today >= config['max_games_per_day']:
+            response = jsonify({'error': f'Лимит игр на сегодня исчерпан ({config["max_games_per_day"]} игр)'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # Проверяем баланс дней
+        days_remaining = get_user_days_remaining(user)
+        
+        if days_remaining < bet_days:
+            response = jsonify({'error': f'Недостаточно дней для ставки. У вас {days_remaining} дней'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # Сначала списываем ставку
+        balance_before = days_remaining
+        success = update_user_subscription(user, -bet_days)
+        if not success:
+            response = jsonify({'error': 'Ошибка списания ставки'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 500
+        
+        # Крутим колесо
+        multiplier = spin_wheel(config['chances'])
+        
+        # Рассчитываем выигрыш
+        # Множитель показывает, сколько дней получаем за ставку
+        # Например, x5 означает, что за 1 день ставки получаем 5 дней
+        # Ставка уже списана, поэтому просто добавляем выигрыш
+        if multiplier == 0:
+            win_days = 0  # Потеря ставки (получаем 0, ставка уже списана)
+        else:
+            # Получаем bet_days * multiplier дней
+            win_days = int(bet_days * multiplier)
+        
+        # Добавляем выигрыш (если есть)
+        if win_days > 0:
+            success = update_user_subscription(user, win_days)
+            if not success:
+                response = jsonify({'error': 'Ошибка начисления выигрыша'})
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                return response, 500
+        
+        # Получаем финальный баланс
+        days_remaining_after = get_user_days_remaining(user)
+        balance_after = days_remaining_after
+        
+        # Чистый выигрыш/проигрыш для статистики
+        net_win_days = win_days - bet_days
+        
+        # Логируем для отладки
+        print(f"Casino: bet={bet_days}, multiplier={multiplier}, win_days={win_days}, net_win={net_win_days}, balance_before={balance_before}, balance_after={balance_after}")
+        
+        # Сохраняем игру в историю
+        game = CasinoGame(
+            user_id=user.id,
+            bet_days=bet_days,
+            multiplier=multiplier,
+            win_days=net_win_days,  # Чистый выигрыш/проигрыш для статистики
+            balance_before=balance_before,
+            balance_after=balance_after
+        )
+        db.session.add(game)
+        
+        # Обновляем статистику казино
+        stats = CasinoStats.query.first()
+        if not stats:
+            stats = CasinoStats(
+                total_games=0,
+                total_bet_days=0,
+                total_win_days=0,
+                total_lost_days=0,
+                house_profit_days=0
+            )
+            db.session.add(stats)
+        
+        # Инициализируем None значения
+        if stats.total_games is None:
+            stats.total_games = 0
+        if stats.total_bet_days is None:
+            stats.total_bet_days = 0
+        if stats.total_win_days is None:
+            stats.total_win_days = 0
+        if stats.total_lost_days is None:
+            stats.total_lost_days = 0
+        
+        stats.total_games += 1
+        stats.total_bet_days += bet_days
+        
+        if net_win_days > 0:
+            stats.total_win_days += net_win_days
+        else:
+            stats.total_lost_days += abs(net_win_days)
+        
+        stats.house_profit_days = stats.total_lost_days - stats.total_win_days
+        
+        db.session.commit()
+        
+        # Определяем результат
+        if multiplier == 0:
+            result_text = 'Вы проиграли!'
+            result_type = 'lose'
+        elif multiplier == 1:
+            result_text = 'Ставка возвращена'
+            result_type = 'neutral'
+        elif multiplier < 1:
+            result_text = 'Частичный возврат'
+            result_type = 'partial'
+        else:
+            result_text = 'Вы выиграли!'
+            result_type = 'win'
+        
+        response = jsonify({
+            'success': True,
+            'multiplier': multiplier,
+            'bet_days': bet_days,
+            'win_days': win_days,  # Количество дней, которое было добавлено
+            'net_win_days': net_win_days,  # Чистый выигрыш/проигрыш (выигрыш - ставка)
+            'balance_before': balance_before,
+            'balance_after': balance_after,
+            'result_text': result_text,
+            'result_type': result_type,
+            'games_remaining_today': config['max_games_per_day'] - games_today - 1
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        response = jsonify({'error': str(e)})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
+
+
+@app.route('/miniapp/casino/history', methods=['GET', 'POST', 'OPTIONS'])
+def casino_history():
+    """Получить историю игр пользователя"""
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', '*')
+        return response, 200
+    
+    try:
+        data = request.json or {}
+        init_data = data.get('initData', '')
+        
+        telegram_id, _ = parse_telegram_init_data(init_data)
+        
+        if not telegram_id:
+            response = jsonify({'games': []})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 200
+        
+        user = User.query.filter_by(telegram_id=str(telegram_id)).first()
+        if not user:
+            response = jsonify({'games': []})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 200
+        
+        # Последние 20 игр
+        games = CasinoGame.query.filter_by(user_id=user.id).order_by(
+            CasinoGame.created_at.desc()
+        ).limit(20).all()
+        
+        # Статистика пользователя
+        total_games = CasinoGame.query.filter_by(user_id=user.id).count()
+        total_bet = db.session.query(db.func.sum(CasinoGame.bet_days)).filter_by(user_id=user.id).scalar() or 0
+        total_win = db.session.query(db.func.sum(CasinoGame.win_days)).filter_by(user_id=user.id).scalar() or 0
+        
+        response = jsonify({
+            'games': [g.to_dict() for g in games],
+            'stats': {
+                'total_games': total_games,
+                'total_bet': total_bet,
+                'total_profit': total_win  # Может быть отрицательным
+            }
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        response = jsonify({'games': [], 'stats': {}})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 200

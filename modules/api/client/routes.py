@@ -629,15 +629,22 @@ def activate_promocode():
     try:
         data = request.json
         promo_code = data.get('promo_code', '').strip().upper()
+        
+        print(f"[PROMO] Activate promocode request: code={promo_code}, user_id={user.id}")
 
         if not promo_code:
+            print(f"[PROMO] Error: promo code is required")
             return jsonify({"message": "Promo code is required"}), 400
 
         promo = PromoCode.query.filter_by(code=promo_code).first()
         if not promo:
+            print(f"[PROMO] Error: promo code '{promo_code}' not found")
             return jsonify({"message": "Invalid promo code"}), 404
 
+        print(f"[PROMO] Found promo: type={promo.promo_type}, value={promo.value}, uses_left={promo.uses_left}")
+
         if promo.uses_left <= 0:
+            print(f"[PROMO] Error: promo code '{promo_code}' has no uses left")
             return jsonify({"message": "Promo code is no longer valid"}), 400
 
         if promo.promo_type == 'DAYS':
@@ -667,12 +674,18 @@ def activate_promocode():
                         "message": f"Promo activated! +{promo.value} days",
                         "new_expire_date": new_expire_dt.isoformat()
                     }), 200
+                print(f"[PROMO] Error: Failed to update subscription, resp={update_resp.status_code}")
                 return jsonify({"message": "Failed to update subscription"}), 500
+            print(f"[PROMO] Error: Failed to get user data, resp={resp.status_code}")
             return jsonify({"message": "Failed to get user data"}), 500
         else:
+            print(f"[PROMO] Error: Promo code type '{promo.promo_type}' cannot be activated directly")
             return jsonify({"message": "This promo code type cannot be activated directly"}), 400
 
     except Exception as e:
+        print(f"[PROMO] Exception: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"message": "Internal Error"}), 500
 
 

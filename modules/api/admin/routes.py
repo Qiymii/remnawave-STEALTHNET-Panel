@@ -1458,6 +1458,14 @@ def delete_tariff(current_admin, tariff_id=None, id=None):
         tariff = db.session.get(Tariff, tariff_id)
         if not tariff:
             return jsonify({"message": "Tariff not found"}), 404
+        
+        # Перед удалением тарифа обнуляем tariff_id в связанных платежах
+        # Это позволяет сохранить историю платежей, но убрать ссылку на удаляемый тариф
+        payments_updated = Payment.query.filter_by(tariff_id=tariff_id).update({Payment.tariff_id: None})
+        if payments_updated > 0:
+            print(f"[TARIFF] Updated {payments_updated} payment(s) to remove tariff reference")
+        
+        # Теперь можно безопасно удалить тариф
         db.session.delete(tariff)
         db.session.commit()
         
@@ -1480,10 +1488,17 @@ def delete_tariff(current_admin, tariff_id=None, id=None):
         except Exception as e:
             print(f"[CACHE] Error clearing cache: {e}")
         
+        print(f"[TARIFF] Deleted tariff: id={tariff_id}")
         return jsonify({"message": "Tariff deleted successfully"}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "Internal Server Error"}), 500
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[TARIFF] Error deleting tariff {tariff_id}: {e}")
+        print(f"[TARIFF] Traceback: {error_trace}")
+        return jsonify({
+            "message": f"Internal Server Error: {str(e)}"
+        }), 500
 
 
 # ============================================================================

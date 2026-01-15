@@ -48,7 +48,6 @@ from modules.models.currency import CurrencyRate
 from modules.models.tariff_feature import TariffFeatureSetting
 from modules.models.auto_broadcast import AutoBroadcastMessage, AutoBroadcastSettings
 from modules.models.casino import CasinoGame, CasinoStats
-from modules.models.trial import TrialSettings
 
 # ============================================================================
 # ИМПОРТ API МАРШРУТОВ
@@ -76,23 +75,14 @@ def payment_success():
         # Docker путь (приоритет)
         '/app/frontend/build/miniapp-v2/payment-success.html',
         '/app/frontend/build/miniapp/payment-success.html',
-        # Абсолютные пути
-        '/opt/remnawave-STEALTHNET-Panel/frontend/build/miniapp-v2/payment-success.html',
-        '/opt/remnawave-STEALTHNET-Panel/frontend/build/miniapp/payment-success.html',
-        '/opt/remnawave-STEALTHNET-panel/frontend/build/miniapp-v2/payment-success.html',
-        '/opt/remnawave-STEALTHNET-panel/frontend/build/miniapp/payment-success.html',
-        '/opt/remnawave-STEALTHNET-PANEL/frontend/build/miniapp-v2/payment-success.html',
-        '/opt/remnawave-STEALTHNET-PANEL/frontend/build/miniapp/payment-success.html',
-        '/opt/admin/frontend/build/miniapp-v2/payment-success.html',
-        '/opt/admin/frontend/build/miniapp/payment-success.html',
-        # Относительные пути
+        # Относительные и универсальные пути через BASE_DIR 🔹
         os.path.join(base_dir, 'frontend', 'build', 'miniapp-v2', 'payment-success.html'),
         os.path.join(base_dir, 'frontend', 'build', 'miniapp', 'payment-success.html'),
         os.path.join(base_dir, 'admin-panel', 'miniapp-v2', 'payment-success.html'),
         os.path.join(base_dir, 'admin-panel', 'miniapp', 'payment-success.html'),
         os.path.join(base_dir, 'admin-panel', 'payment-success.html')
     ]
-    
+
     for path in possible_paths:
         if os.path.exists(path):
             dir_path = os.path.dirname(path)
@@ -102,7 +92,7 @@ def payment_success():
             response.headers['Pragma'] = 'no-cache'
             response.headers['Expires'] = '0'
             return response
-    
+
     # Если не найдено, возвращаем 404
     return jsonify({"error": "payment-success.html not found"}), 404
 
@@ -117,51 +107,37 @@ def miniapp_v2_static(path):
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS')
         return response
-    
+
     def get_miniapp_v2_path():
         """Получить путь к папке miniapp-v2"""
-        miniapp_path = os.getenv("MINIAPP_V2_PATH", "")
-        if miniapp_path:
-            miniapp_path = miniapp_path.strip()
-            if miniapp_path and os.path.exists(miniapp_path):
-                index_path = os.path.join(miniapp_path, 'index.html')
-                if os.path.exists(index_path):
-                    return miniapp_path
-        
+        miniapp_path = os.getenv("MINIAPP_V2_PATH", "").strip()
+        if miniapp_path and os.path.exists(miniapp_path):
+            index_path = os.path.join(miniapp_path, 'index.html')
+            if os.path.exists(index_path):
+                return miniapp_path
+
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Стандартные пути (в порядке приоритета)
+
+        # Стандартные пути (в порядке приоритета) 🔹
         possible_paths = [
-            # Docker путь
-            '/app/frontend/build/miniapp-v2',
-            # Абсолютные пути
-            '/opt/remnawave-STEALTHNET-Panel/frontend/build/miniapp-v2',
-            '/opt/remnawave-STEALTHNET-panel/frontend/build/miniapp-v2',
-            '/opt/remnawave-STEALTHNET-PANEL/frontend/build/miniapp-v2',
-            '/opt/admin/frontend/build/miniapp-v2',
-            # Относительные пути
+            '/app/frontend/build/miniapp-v2',  # Docker
             os.path.join(base_dir, 'frontend', 'build', 'miniapp-v2'),
             os.path.join(base_dir, 'admin-panel', 'miniapp-v2'),
-            os.path.join(base_dir, 'admin-panel', 'build', 'miniapp-v2'),
-            '/opt/admin/admin-panel/miniapp-v2',
-            '/opt/admin/admin-panel/build/miniapp-v2'
+            os.path.join(base_dir, 'admin-panel', 'build', 'miniapp-v2')
         ]
-        
+
         for p in possible_paths:
-            if os.path.exists(p):
-                index_path = os.path.join(p, 'index.html')
-                if os.path.exists(index_path):
-                    return p
-        
+            if os.path.exists(p) and os.path.exists(os.path.join(p, 'index.html')):
+                return p
+
         return None
-    
+
     miniapp_dir = get_miniapp_v2_path()
-    
+
     if not miniapp_dir:
-        # Возвращаем простой 404 без JSON, так как это может быть нормальной ситуацией
         from flask import abort
         abort(404)
-    
+
     # Если путь пустой или заканчивается на /, отдаем index.html
     if not path or path.endswith('/'):
         index_path = os.path.join(miniapp_dir, 'index.html')
@@ -173,33 +149,30 @@ def miniapp_v2_static(path):
             response.headers['Expires'] = '0'
             return response
         return jsonify({"error": "index.html not found"}), 404
-    
+
     # Безопасность: проверяем, что путь не выходит за пределы директории
     file_path = os.path.join(miniapp_dir, path)
     if not os.path.abspath(file_path).startswith(os.path.abspath(miniapp_dir)):
         return jsonify({"error": "Invalid path"}), 403
-    
+
     if os.path.exists(file_path) and os.path.isfile(file_path):
         response = send_from_directory(miniapp_dir, path)
-        # Для HTML файлов отключаем кэширование
         if path.endswith('.html'):
             response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response.headers['Pragma'] = 'no-cache'
             response.headers['Expires'] = '0'
         return response
-    
+
     # Если файл не найден, отдаем index.html (для SPA)
     index_path = os.path.join(miniapp_dir, 'index.html')
     if os.path.exists(index_path):
         response = send_from_directory(miniapp_dir, 'index.html')
-        # Отключаем кэширование для index.html
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
         return response
-    
-    return jsonify({"error": "File not found"}), 404
 
+    return jsonify({"error": "File not found"}), 404
 
 @app.route('/miniapp/', defaults={'path': ''}, methods=['GET', 'HEAD', 'POST', 'OPTIONS'])
 @app.route('/miniapp/<path:path>', methods=['GET', 'HEAD', 'POST', 'OPTIONS'])
@@ -212,77 +185,59 @@ def miniapp_static(path):
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS')
         return response
-    
+
     def get_miniapp_path():
         """Получить путь к папке miniapp"""
-        miniapp_path = os.getenv("MINIAPP_PATH", "")
-        if miniapp_path:
-            miniapp_path = miniapp_path.strip()
-            if miniapp_path and os.path.exists(miniapp_path):
-                index_path = os.path.join(miniapp_path, 'index.html')
-                if os.path.exists(index_path):
-                    return miniapp_path
-        
+        miniapp_path = os.getenv("MINIAPP_PATH", "").strip()
+        if miniapp_path and os.path.exists(miniapp_path):
+            index_path = os.path.join(miniapp_path, 'index.html')
+            if os.path.exists(index_path):
+                return miniapp_path
+
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Стандартные пути (в порядке приоритета)
+
+        # Стандартные пути (в порядке приоритета) 🔹
         possible_paths = [
-            # Docker путь
-            '/app/frontend/build/miniapp',
-            # Абсолютные пути
-            '/opt/remnawave-STEALTHNET-Panel/frontend/build/miniapp',
-            '/opt/remnawave-STEALTHNET-panel/frontend/build/miniapp',
-            '/opt/remnawave-STEALTHNET-PANEL/frontend/build/miniapp',
-            '/opt/admin/frontend/build/miniapp',
-            # Относительные пути
-            os.path.join(base_dir, 'frontend', 'build', 'miniapp'),
+            '/app/frontend/build/miniapp',  # Docker
+            os.path.join(base_dir, 'frontend', 'build/miniapp'),
             os.path.join(base_dir, 'admin-panel', 'miniapp'),
             os.path.join(base_dir, 'admin-panel', 'build', 'miniapp'),
-            os.path.join(base_dir, 'miniapp'),
-            '/opt/admin/admin-panel/miniapp',
-            '/opt/admin/admin-panel/build/miniapp',
-            '/opt/admin/miniapp',
-            '/var/www/admin-panel/miniapp',
-            '/var/www/admin-panel/build/miniapp'
+            os.path.join(base_dir, 'miniapp')
         ]
-        
+
         for p in possible_paths:
-            if os.path.exists(p):
-                index_path = os.path.join(p, 'index.html')
-                if os.path.exists(index_path):
-                    return p
-        
+            if os.path.exists(p) and os.path.exists(os.path.join(p, 'index.html')):
+                return p
+
         return None
-    
+
     miniapp_dir = get_miniapp_path()
-    
+
     if not miniapp_dir:
-        # Возвращаем простой 404 без JSON, так как это может быть нормальной ситуацией
         from flask import abort
         abort(404)
-    
+
     # Если путь пустой или заканчивается на /, отдаем index.html
     if not path or path.endswith('/'):
         index_path = os.path.join(miniapp_dir, 'index.html')
         if os.path.exists(index_path):
             return send_from_directory(miniapp_dir, 'index.html')
         return jsonify({"error": "index.html not found"}), 404
-    
+
     # Безопасность: проверяем, что путь не выходит за пределы директории
     file_path = os.path.join(miniapp_dir, path)
     if not os.path.abspath(file_path).startswith(os.path.abspath(miniapp_dir)):
         return jsonify({"error": "Invalid path"}), 403
-    
+
     if os.path.exists(file_path) and os.path.isfile(file_path):
         return send_from_directory(miniapp_dir, path)
-    
+
     # Если файл не найден, отдаем index.html (для SPA)
     index_path = os.path.join(miniapp_dir, 'index.html')
     if os.path.exists(index_path):
         return send_from_directory(miniapp_dir, 'index.html')
-    
-    return jsonify({"error": "File not found"}), 404
 
+    return jsonify({"error": "File not found"}), 404
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -296,10 +251,10 @@ def serve_admin_panel(path):
         from flask import abort
         abort(404)
 
-    # Пробуем найти admin-panel или frontend/build
+    # Пробуем найти admin-panel или frontend/build 🔹
     base_dir = os.path.dirname(os.path.abspath(__file__))
     admin_panel_dir = None
-    
+
     # Сначала пробуем frontend/build (для Docker)
     frontend_build = os.path.join(base_dir, 'frontend', 'build')
     if os.path.exists(frontend_build) and os.path.exists(os.path.join(frontend_build, 'index.html')):
@@ -335,7 +290,7 @@ def get_broadcast_settings():
                 }
     except Exception as e:
         print(f"Warning: Could not load settings from DB: {e}")
-    
+
     # Fallback на переменные окружения
     return {
         'enabled': os.getenv('AUTO_BROADCAST_ENABLED', 'true').lower() == 'true',
@@ -356,23 +311,23 @@ def run_auto_broadcasts_job():
 def start_scheduler():
     """Запустить планировщик автоматической рассылки"""
     global _scheduler
-    
+
     try:
         from apscheduler.schedulers.background import BackgroundScheduler
         from apscheduler.triggers.cron import CronTrigger
         import atexit
-        
+
         settings = get_broadcast_settings()
-        
+
         if not settings['enabled']:
             app.logger.info("📅 Автоматическая рассылка отключена")
             return
-        
+
         _scheduler = BackgroundScheduler(daemon=True)
-        
+
         # Парсим часы
         hours = [int(h.strip()) for h in settings['hours'].split(',')]
-        
+
         for hour in hours:
             _scheduler.add_job(
                 func=run_auto_broadcasts_job,
@@ -381,13 +336,13 @@ def start_scheduler():
                 name=f'Auto Broadcast at {hour}:00',
                 replace_existing=True
             )
-        
+
         _scheduler.start()
         app.logger.info(f"📅 Планировщик автоматической рассылки запущен: {settings['hours']}:00")
-        
+
         # Останавливаем планировщик при выходе
         atexit.register(lambda: _scheduler.shutdown() if _scheduler else None)
-        
+
     except ImportError:
         app.logger.warning("⚠️  APScheduler не установлен. Автоматическая рассылка недоступна.")
     except Exception as e:
@@ -396,23 +351,21 @@ def start_scheduler():
 def restart_scheduler():
     """Перезапустить планировщик с новыми настройками"""
     global _scheduler
-    
+
     try:
         # Останавливаем текущий планировщик
         if _scheduler:
             _scheduler.shutdown(wait=False)
             _scheduler = None
             app.logger.info("📅 Планировщик остановлен для перезапуска")
-        
+
         # Запускаем с новыми настройками
         start_scheduler()
-        
+
     except Exception as e:
         app.logger.error(f"❌ Ошибка перезапуска планировщика: {e}")
 
-
 # ============================================================================
-
 if __name__ == '__main__':
     import logging
     from logging.handlers import RotatingFileHandler
@@ -430,20 +383,19 @@ if __name__ == '__main__':
     app.logger.setLevel(logging.DEBUG)
     werkzeug_logger = logging.getLogger('werkzeug')
     werkzeug_logger.setLevel(logging.DEBUG)
-    
+
     # Игнорируем ошибки "Bad request version" - это обычно попытки HTTPS подключения к HTTP серверу
-    import logging
     class BadRequestVersionFilter(logging.Filter):
         def filter(self, record):
             return 'Bad request version' not in str(record.getMessage())
-    
+
     werkzeug_logger.addFilter(BadRequestVersionFilter())
 
     # Создаем таблицы базы данных и выполняем миграцию при необходимости
     with app.app_context():
         # Проверяем, нужна ли миграция с SQLite на PostgreSQL
         use_postgresql = app.config.get('USE_POSTGRESQL', False)
-        
+
         if use_postgresql:
             # Если используется PostgreSQL, проверяем миграцию
             # Ищем SQLite базу в правильном порядке: instance/stealthnet.db, затем stealthnet.db
@@ -451,13 +403,13 @@ if __name__ == '__main__':
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'stealthnet.db'),
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), 'stealthnet.db')
             ]
-            
+
             sqlite_path = None
             for path in sqlite_paths:
                 if os.path.exists(path):
                     sqlite_path = path
                     break
-            
+
             if sqlite_path:
                 # SQLite база найдена - проверяем миграцию
                 try:
@@ -471,7 +423,7 @@ if __name__ == '__main__':
                         migration_success = migrate_data()
                         if migration_success:
                             app.logger.info("✅ Миграция завершена успешно")
-                            
+
                             # После миграции данных исправляем sequences в PostgreSQL
                             try:
                                 from fix_postgresql_sequences import fix_sequences
@@ -493,47 +445,14 @@ if __name__ == '__main__':
             else:
                 # SQLite база не найдена - просто создаем новую базу в PostgreSQL
                 app.logger.info("ℹ️  SQLite база данных не найдена, создается новая база в PostgreSQL")
-        
+
         # Создаем таблицы в базе данных
         db.create_all()
-        
-        # Создаем настройки триала если их нет
-        try:
-            trial_settings = TrialSettings.query.first()
-            if not trial_settings:
-                app.logger.info("📋 Создание настроек триала по умолчанию...")
-                default_settings = TrialSettings(
-                    days=3,
-                    devices=3,
-                    traffic_limit_bytes=0,
-                    enabled=True,
-                    title_ru='Получите {days} дней премиум',
-                    title_ua='Отримайте {days} днів преміум',
-                    title_en='Get {days} Days Premium',
-                    title_cn='获得 {days} 天高级版',
-                    description_ru='Дадим полный доступ без ограничений — протестируйте сеть перед оплатой.',
-                    description_ua='Дамо повний доступ без обмежень — протестуйте мережу перед оплатою.',
-                    description_en='We\'ll give you full access without restrictions — test the network before payment.',
-                    description_cn='我们将为您提供无限制的完全访问权限 — 在付款前测试网络。',
-                    button_text_ru='🎁 Попробовать бесплатно ({days} дня)',
-                    button_text_ua='🎁 Спробувати безкоштовно ({days} дні)',
-                    button_text_en='🎁 Try Free ({days} Days)',
-                    button_text_cn='🎁 免费试用 ({days} 天)',
-                    activation_message_ru='✅ Триал активирован! Вам добавлено {days} дней премиум-доступа.',
-                    activation_message_ua='✅ Тріал активовано! Вам додано {days} днів преміум-доступу.',
-                    activation_message_en='✅ Trial activated! You have been added {days} days of premium access.',
-                    activation_message_cn='✅ 试用已激活！您已获得 {days} 天的高级访问权限。'
-                )
-                db.session.add(default_settings)
-                db.session.commit()
-                app.logger.info("✅ Настройки триала созданы")
-        except Exception as e:
-            app.logger.warning(f"⚠️  Ошибка при создании настроек триала: {e}")
-        
+
         # Создаем дефолтные сообщения автоматических рассылок если их нет
         try:
             from modules.models.auto_broadcast import AutoBroadcastMessage
-            
+
             default_messages = {
                 'subscription_expiring_3days': {
                     'text': 'Подписка заканчивается через 3 дня, не забудьте продлить',
@@ -561,7 +480,7 @@ if __name__ == '__main__':
                     'bot_type': 'both'
                 }
             }
-            
+
             for msg_type, msg_data in default_messages.items():
                 existing_msg = AutoBroadcastMessage.query.filter_by(message_type=msg_type).first()
                 if not existing_msg:
@@ -573,11 +492,11 @@ if __name__ == '__main__':
                     )
                     db.session.add(new_msg)
                     app.logger.info(f"✅ Создано сообщение: {msg_type}")
-            
+
             db.session.commit()
         except Exception as e:
             app.logger.warning(f"⚠️  Ошибка при создании дефолтных сообщений: {e}")
-        
+
         # Запускаем миграции схемы базы данных (добавление новых колонок)
         try:
             from run_schema_migrations import run_all_schema_migrations
@@ -586,7 +505,7 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.warning(f"⚠️  Ошибка при выполнении миграций схемы: {e}")
             # Не прерываем запуск приложения, продолжаем работу
-        
+
         # Исправляем encrypted_password для пользователей из бота (если нужно)
         try:
             from fix_encrypted_passwords import fix_encrypted_passwords
@@ -595,12 +514,12 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.warning(f"⚠️  Ошибка при исправлении encrypted_password: {e}")
             # Не прерываем запуск приложения, продолжаем работу
-        
+
         app.logger.info("=" * 60)
         app.logger.info("StealthNET API Starting...")
         app.logger.info(f"Registered {len(list(app.url_map.iter_rules()))} endpoints")
         app.logger.info("=" * 60)
-        
+
         # Запускаем планировщик автоматических рассылок
         start_scheduler()
 

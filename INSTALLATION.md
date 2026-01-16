@@ -134,7 +134,7 @@ YOUR_SERVER_IP=stealthnet.yourdomain.com
 SERVICE_NAME=StealthNET
 ```
 
-## Генерация ключей
+**Генерация ключей**
 
 Вариант 1: Использование скрипта (рекомендуется)
 ```bash
@@ -691,6 +691,7 @@ docker compose logs -f
 5. Проверьте, что порты 80, 443 и 5000 открыты в firewall
 
 **Удачного использования!** 
+
 
 
 

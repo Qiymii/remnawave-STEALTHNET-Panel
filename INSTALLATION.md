@@ -188,9 +188,6 @@ MINIAPP_URL=https://stealthnet.yourdomain.com
 
 ### Настройка платёжных систем
 
-Заполните параметры только для тех платёжных систем,
-которые планируется использовать.
-
 ```env
 # CrystalPay (пример)
 CRYSTALPAY_API_KEY=api_key
@@ -200,7 +197,7 @@ CRYSTALPAY_API_SECRET=api_secret
 Telegram Stars использует `CLIENT_BOT_TOKEN`  
 Дополнительная настройка не требуется.
 
-⚠️ **Важно**: не все платёжные системы обязательны.
+⚠️ **Важно**: Не все платежные системы обязательны. Настройте только те, которые вам нужны.
 
 ## Настройка SSL-сертификата
 
@@ -378,6 +375,7 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
 
 
 

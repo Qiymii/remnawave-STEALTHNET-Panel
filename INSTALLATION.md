@@ -292,7 +292,7 @@ curl http://localhost:5000/api/public/health
 
 ## Создание пользователя с правами администратора
 
-Измните 
+Измните:
 login: admin@yourdomain.com
 password: mypassward123
 
@@ -376,6 +376,7 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
 
 
 

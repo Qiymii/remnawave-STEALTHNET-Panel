@@ -266,40 +266,37 @@ docker compose build
 docker compose up -d
 ```
 
-# Проверяем статус
+## Проверяем работу сервисов
+Статус всех контейнеров проекта
 ```bash
 docker compose ps
 ```
 
-# Смотрим логи
+Логи проекта
 ```bash
 docker compose logs -f
 ```
 
-## Проверяем работу сервисов
-
-Проверяем API
+API
 ```bash
 curl http://localhost:5000/api/public/health
 ```
 Должен вернуть: {"status": "ok"}
 
-Проверяем логи API
+Логи API
 ```bash
 docker compose logs api
 ```
 
-Проверяем логи бота
+Логи бота
 ```bash
 docker compose logs bot
 ```
 
-Проверяем логи Nginx
+Логи Nginx
 ```bash
 docker compose logs nginx
 ```
-
-## Проверка работы
 
 **Проверка бота**
 
@@ -321,12 +318,12 @@ docker compose logs nginx
 cd /opt/remnawave-STEALTHNET-Panel
 ```
 
-Запуск всех сервисов
+Запуск проекта
 ```bash
 docker compose up -d
 ```
 
-Остановка всех сервисов
+Остановка проекта
 ```bash
 docker compose down
 ```
@@ -694,6 +691,7 @@ docker compose logs -f
 5. Проверьте, что порты 80, 443 и 5000 открыты в firewall
 
 **Удачного использования!** 
+
 
 
 

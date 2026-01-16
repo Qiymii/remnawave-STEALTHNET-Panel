@@ -332,12 +332,39 @@ docker compose up -d
 docker compose cp api:/app/instance/stealthnet.db ./backup_stealthnet_$(date +%Y%m%d_%H%M%S).db
 ```
 
+## Решение проблем
+
+- Проверьте логи: `docker compose logs`
+- Проверьте статус контейнеров: `docker compose ps`
+- Проверьте конфигурацию: `docker compose config`
+- Убедитесь, что файл `.env` заполнен корректно
+
+## Дополнительные настройки
+
+### Настройка Telegram Webhook
+
+```bash
+curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://panel.stealthnet.app/api/webhook/telegram"}'
+```
+
+## Чеклист после установки
+
+- [ ] Docker и Docker Compose установлены
+- [ ] `.env` заполнен
+- [ ] Контейнеры запущены
+- [ ] API доступен
+- [ ] SSL настроен
+- [ ] Telegram-бот отвечает
+
 ## Важные замечания
 
 - Никогда не коммитьте файл `.env`
-- Для высоконагруженных инсталляций рекомендуется использовать PostgreSQL
-- Регулярно выполняйте резервное копирование базы данных
-
----
+- Для продакшена рекомендуется PostgreSQL
+- Регулярно обновляйте Docker-образы
+- Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
+

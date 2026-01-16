@@ -122,37 +122,37 @@ URL вашей Remnawave панели
 API_URL=https://panel.yourdomain.com
 
 Токен для Remnawave панели 
-# Cоздаётся в панеле Remnawave - Настройки Remnawave - API токены - Создать
+# Панель Remnawave - Настройки Remnawave - API токены - Создать
 ADMIN_TOKEN=токен_remnawave
 
 ID сквада по умолчанию
-Панель Remnawave - Внутренние сквады - Скопировать UUID
+#  Панель Remnawave - Внутренние сквады - Скопировать UUID
 DEFAULT_SQUAD_ID=id_сквада
 
-URL (создать A-запись у DNS-провайдера) или IP адрес сервера 
-на который устаналивается StealthNET Admin Panel (без https://)
+URL или IP адрес сервера (без https://)
+# Cоздать A-запись у DNS-провайдера на который устаналивается StealthNET Admin Panel
 YOUR_SERVER_IP=stealthnet.yourdomain.com
 
-# Название вашего сервиса
+Название вашего сервиса
 SERVICE_NAME=StealthNET
 ```
 ---
 
 ## Генерация ключей
 
-**Вариант 1: Использование скрипта (рекомендуется)**
+Вариант 1: Использование скрипта (рекомендуется)
 ```bash
 chmod +x generate_keys.sh
 ./generate_keys.sh
 ```
 
-**Вариант 2: Ручная генерация**
+Вариант 2: Ручная генерация
 
-**Генерация JWT_SECRET_KEY**
+Генерация JWT_SECRET_KEY
 ```bash
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
-**Генерация FERNET_KEY**
+Генерация FERNET_KEY
 ```bash
 python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
@@ -716,6 +716,7 @@ docker compose logs -f
 ---
 
 **Удачного использования!** 
+
 
 
 

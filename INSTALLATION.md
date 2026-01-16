@@ -292,10 +292,12 @@ curl http://localhost:5000/api/public/health
 
 ## Создание пользователя с правами администратора
 
-Измните:
-login: admin@yourdomain.com
-password: mypassward123
+Измените учётные данные администратора:
 
+- Login: `admin@yourdomain.com`
+- Password: `mypassword123`
+
+Создайте пользователя командой:
 ```bash
 docker exec stealthnet-api python3 /app/create_admin.py admin@yourdomain.com mypassword123
 ```
@@ -376,6 +378,7 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
 
 
 

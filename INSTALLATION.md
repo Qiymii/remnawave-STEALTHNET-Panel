@@ -210,10 +210,14 @@ Telegram Stars использует `CLIENT_BOT_TOKEN`
 ss -tulpn | grep ':80' && echo "❌ 80 порт занят" || echo "✅ 80 порт свободен"
 ```
 
-Установите Certbot:
+Установите Certbot (Ubuntu/Debian):
 ```bash
-sudo apt update
 sudo apt install -y certbot
+```
+
+Установите Certbot (CentOS/RHEL):
+```bash
+sudo yum install -y certbot
 ```
 
 Получите сертификат (замените домен и email):
@@ -375,6 +379,7 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
 
 
 

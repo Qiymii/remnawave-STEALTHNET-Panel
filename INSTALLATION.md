@@ -2,9 +2,9 @@
 
 Это подробная инструкция по установке проекта StealthNET VPN на чистый сервер с использованием Docker.
 
-**Важно**: Проект должен быть установлен в `/opt/remnawave-STEALTHNET-Panel/` (клонирован из [GitHub репозитория](https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git)).
+⚠️ **Важно**: Проект должен быть установлен в `/opt/remnawave-STEALTHNET-Panel/` (клонирован из [GitHub репозитория](https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git)).
 
-## 📋 Содержание
+## Содержание
 
 1. [Требования](#требования)
 2. [Установка Docker и Docker Compose](#установка-docker-и-docker-compose)
@@ -20,7 +20,7 @@
 
 ---
 
-## 🔧 Требования
+## Требования
 
 - **Операционная система**: Ubuntu 20.04+ / Debian 11+ / CentOS 8+
 - **RAM**: минимум 2GB (рекомендуется 4GB+)
@@ -30,76 +30,86 @@
 
 ---
 
-## 1️⃣ Установка Docker и Docker Compose
+## Установка Docker и Docker Compose
 
 ### Ubuntu/Debian
 
-```bash
 # Устанавливаем Docker одной командой (официальный скрипт)
+```bash
 sudo curl -fsSL https://get.docker.com | sh
+```
 
 # Если вы используете не root пользователя, добавьте его в группу docker:
-# sudo usermod -aG docker $USER
-# newgrp docker
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
 # Проверяем установку
+```bash
 docker --version
 docker compose version
 ```
 
 ### CentOS/RHEL
 
-```bash
 # Устанавливаем Docker одной командой (официальный скрипт)
+```bash
 sudo curl -fsSL https://get.docker.com | sh
+```
 
 # Запускаем Docker
+```bash
 sudo systemctl start docker
 sudo systemctl enable docker
+```
 
 # Если вы используете не root пользователя, добавьте его в группу docker:
-# sudo usermod -aG docker $USER
-# newgrp docker
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
 # Проверяем установку
+```bash
 docker --version
 docker compose version
 ```
 
----
-
-## 2️⃣ Подготовка сервера
+## Подготовка сервера
 
 ### Создаем директорию проекта
 
-```bash
 # Клонируем проект из GitHub
+```bash
 cd /opt
 git clone https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git
 cd remnawave-STEALTHNET-Panel
+```
 
 # Или если копируете файлы вручную:
-# mkdir -p /opt/remnawave-STEALTHNET-Panel
-# cd /opt/remnawave-STEALTHNET-Panel
-# Скопируйте все файлы из папки "Готовый проект" сюда
+```bash
+mkdir -p /opt/remnawave-STEALTHNET-Panel
+cd /opt/remnawave-STEALTHNET-Panel
 ```
+# Скопируйте все файлы из папки "Готовый проект" сюда
 
 ### Создаем необходимые директории
 
-```bash
 # Создаем директории для данных
+```bash
 mkdir -p instance cache logs nginx/ssl frontend/build
-
-# Если используете не root пользователя, установите права:
-# sudo chown -R $USER:$USER /opt/remnawave-STEALTHNET-Panel
-# chmod -R 755 /opt/remnawave-STEALTHNET-Panel
 ```
 
----
+# Если используете не root пользователя, установите права:
+```bash
+sudo chown -R $USER:$USER /opt/remnawave-STEALTHNET-Panel
+chmod -R 755 /opt/remnawave-STEALTHNET-Panel
+```
 
-## 3️⃣ Настройка переменных окружения
+## Настройка переменных окружения
 
-### Создаем файл .env
+### Создаем и редактируем файл .env
 
 ```bash
 cd /opt/remnawave-STEALTHNET-Panel
@@ -114,37 +124,31 @@ else
     touch .env
 fi
 
-# Генерируем ключи (опционально, можно использовать скрипт)
-chmod +x generate_keys.sh
-./generate_keys.sh
-
-# Редактируем .env файл
-nano .env  # или используйте ваш любимый редактор
+nano .env  
 ```
-
-### Заполняем обязательные переменные
-
-Откройте файл `.env` и заполните следующие обязательные переменные:
 
 #### Основные настройки
 
 ```env
-# JWT секретный ключ (сгенерируйте случайную строку)
-JWT_SECRET_KEY=ваш_случайный_ключ_минимум_32_символа
+# JWT секретный ключ (ниже описаны методы генерации ключей)
+JWT_SECRET_KEY=секретный_ключ
 
-# URL внешнего API (RemnaWave)
-API_URL=https://api.remnawave.com
+# URL вашей Remnawave панели
+API_URL=https://panel.yourdomain.com
 
-# Токен администратора для RemnaWave API
-ADMIN_TOKEN=ваш_токен_администратора
+# Токен для Remnawave панели 
+# Cоздаётся в панеле Remnawave - Настройки Remnawave - API токены - Создать
+ADMIN_TOKEN=токен_remnawave
 
 # ID сквада по умолчанию
-DEFAULT_SQUAD_ID=ваш_сквад_id
+# Панель Remnawave - Внутренние сквады - Скопировать UUID
+DEFAULT_SQUAD_ID=id_сквада
 
-# URL вашего сервера (без https://)
-YOUR_SERVER_IP=panel.stealthnet.app  # или ваш IP адрес
+# URL (Предварительно создав A-запись у DNS-провайдера) или IP адрес сервера 
+# на который устаналивается StealthNET Admin Panel (без https://)
+YOUR_SERVER_IP=stealthnet.yourdomain.com
 
-# Название сервиса
+# Название вашего сервиса
 SERVICE_NAME=StealthNET
 ```
 
@@ -153,24 +157,20 @@ SERVICE_NAME=StealthNET
 **Вариант 1: Использование скрипта (рекомендуется)**
 
 ```bash
-# Делаем скрипт исполняемым
 chmod +x generate_keys.sh
-
-# Генерируем ключи
 ./generate_keys.sh
 ```
 
 **Вариант 2: Ручная генерация**
 
+# Генерация JWT_SECRET_KEY
 ```bash
-# Генерация JWT_SECRET_KEY (случайная строка)
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
-
+```
 # Генерация FERNET_KEY
+```bash
 python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
-
-Скопируйте сгенерированные ключи в файл `.env`.
 
 #### Настройка базы данных
 
@@ -182,202 +182,102 @@ SQLALCHEMY_DATABASE_URI=sqlite:///instance/stealthnet.db
 #### Настройка Telegram бота
 
 ```env
-# Токен Telegram бота (получите у @BotFather)
-CLIENT_BOT_TOKEN=ваш_токен_бота
+# Токен Telegram бота необходимо получить у @BotFather - Open - Copy,
+# либо написав в чате @BotFather `/token`
+CLIENT_BOT_TOKEN=токен_бота
 
 # URL Flask API для бота (внутри Docker используйте http://api:5000)
 FLASK_API_URL=http://api:5000
 
-# URL для Mini-App
-MINIAPP_URL=https://panel.stealthnet.app
+# URL для Mini-App из предыдущего шага (stealthnet.yourdomain.com)
+MINIAPP_URL=https://stealthnet.yourdomain.com
 ```
 
 #### Настройка платежных систем
-
 Заполните настройки для тех платежных систем, которые вы планируете использовать:
 
 ```env
 # CrystalPay (пример)
-CRYSTALPAY_API_KEY=ваш_api_key
-CRYSTALPAY_API_SECRET=ваш_api_secret
+CRYSTALPAY_API_KEY=api_key
+CRYSTALPAY_API_SECRET=api_secret
 
 # Telegram Stars (используется CLIENT_BOT_TOKEN)
 # Дополнительных настроек не требуется
 ```
 
-**Важно**: Не все платежные системы обязательны. Настройте только те, которые вам нужны.
+⚠️ **Важно**: Не все платежные системы обязательны. Настройте только те, которые вам нужны.
 
----
 
-## 4️⃣ Установка проекта
-
-### Копируем файлы проекта
-
-Проект должен быть клонирован из GitHub в `/opt/remnawave-STEALTHNET-Panel`:
-
-```bash
-# Если еще не клонировали, выполните:
-cd /opt
-sudo git clone https://github.com/GOFONCK/remnawave-STEALTHNET-Panel.git
-cd remnawave-STEALTHNET-Panel
-sudo chown -R $USER:$USER /opt/remnawave-STEALTHNET-Panel
-
-# Структура должна быть такой:
-/opt/remnawave-STEALTHNET-Panel/
-├── app.py
-├── client_bot.py
-├── requirements.txt
-├── client_bot_requirements.txt
-├── Dockerfile
-├── Dockerfile.bot
-├── docker-compose.yml
-├── .env (создать из .env.example или env.example)
-├── .env.example или env.example
-├── .dockerignore
-├── logo.png
-├── templates/
-│   ├── email_broadcast.html
-│   └── email_verification.html
-├── frontend/
-│   └── build/  # Собранный React проект (уже в репозитории GitHub)
-├── nginx/
-│   ├── nginx.conf
-│   └── ssl/                        # SSL сертификаты (создается автоматически)
-├── migration/ или migrate_all.py
-│   └── migrate_all.py (если есть папка migration)
-├── start.sh                        # Скрипт быстрого запуска
-├── generate_keys.sh                # Скрипт генерации ключей
-├── .gitignore                      # Исключения для Git
-└── INSTALLATION.md                 # Эта инструкция
-```
-
-**Важно**: Frontend build (`frontend/build/`) уже присутствует в репозитории GitHub, поэтому дополнительно копировать его не нужно.
-
-### Проверяем frontend/build
-
-**Важно**: Frontend build (`frontend/build/`) уже присутствует в репозитории GitHub, поэтому дополнительно копировать его не нужно.
-
-#### Проверка наличия frontend/build
-
-```bash
-# Проверяем, что frontend/build уже есть в проекте:
-ls -la /opt/remnawave-STEALTHNET-Panel/frontend/build/
-
-# Должны быть файлы:
-# - index.html
-# - static/
-#   - css/
-#   - js/
-# - locales/
-# - miniapp/
-# - manifest.json
-# - robots.txt
-```
-
-## 5️⃣ Настройка Nginx
-
-### Редактируем конфигурацию Nginx
-
-```bash
-nano /opt/remnawave-STEALTHNET-Panel/nginx/nginx.conf
-```
-
-Замените `server_name _;` на ваш домен или IP:
-
-```nginx
-server_name panel.stealthnet.app;  # или ваш IP адрес
-```
-
-### Настройка для продакшена (с SSL)
-
-После получения SSL сертификата:
-
-1. **Обновите `nginx/nginx.conf`**:
-   ```bash
-   nano /opt/remnawave-STEALTHNET-Panel/nginx/nginx.conf
-   ```
-   
-   Раскомментируйте блок с HTTPS и укажите правильный `server_name`:
-   ```nginx
-   server {
-       listen 443 ssl http2;
-       server_name panel.stealthnet.app;  # Замените на ваш домен
-       
-       ssl_certificate /etc/nginx/ssl/fullchain.pem;
-       ssl_certificate_key /etc/nginx/ssl/privkey.pem;
-       # ... остальная конфигурация
-   }
-   ```
-
-2. **Скопируйте сертификаты** в директорию проекта:
-   ```bash
-   cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
-   cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
-   ```
-
-3. **Перезапустите Nginx**:
-   ```bash
-   docker compose restart nginx
-   ```
-
----
-
-## 6️⃣ Настройка SSL сертификата
+## Настройка SSL сертификата
 
 ### Вариант 1: Let's Encrypt (рекомендуется)
 
+# Проверяем 80 порт для получения сертификата
 ```bash
-# Устанавливаем Certbot
-sudo apt install -y certbot python3-certbot-nginx  # для Ubuntu/Debian
-# или
-sudo yum install -y certbot python3-certbot-nginx  # для CentOS
+ss -tulpn | grep ':80' && echo "❌ 80 порт ЗАНЯТ" || echo "✅ 80 порт СВОБОДЕН"
+```
 
-# Получаем сертификат (замените на ваш домен и email)
-sudo certbot certonly --standalone -d panel.stealthnet.app --email your@email.com --agree-tos
+# Устанавливаем Certbot
+```bash
+sudo apt update
+sudo apt install -y certbot
+```
+
+# Получаем сертификат (замените на ваш адрес StealthNET Admin Panel и email)
+```bash
+sudo certbot certonly --standalone -d stealthnet.yourdomain.com --agree-tos -m your@email.com
+```
 
 # Копируем сертификаты в директорию проекта
+# Замените на ваш адрес StealthNET Admin Panel
+```bash
 mkdir -p /opt/remnawave-STEALTHNET-Panel/nginx/ssl
-cp /etc/letsencrypt/live/panel.stealthnet.app/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
-cp /etc/letsencrypt/live/panel.stealthnet.app/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
+cp /etc/letsencrypt/live/stealthnet.yourdomain.com/fullchain.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
+cp /etc/letsencrypt/live/stealthnet.yourdomain.com/privkey.pem /opt/remnawave-STEALTHNET-Panel/nginx/ssl/
 ```
 
 ### Вариант 2: Самоподписанный сертификат (для тестирования)
 
-```bash
 # Создаем самоподписанный сертификат
+```bash
 mkdir -p /opt/remnawave-STEALTHNET-Panel/nginx/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /opt/remnawave-STEALTHNET-Panel/nginx/ssl/privkey.pem \
   -out /opt/remnawave-STEALTHNET-Panel/nginx/ssl/fullchain.pem
 ```
 
-После получения сертификата обновите `nginx/nginx.conf` (раскомментируйте HTTPS блок).
+## Настройка Nginx
 
----
+### Редактируем конфигурацию Nginx
 
-## 7️⃣ Запуск проекта
+Замените stealthnet.yourdomain.com на ваш адрес StealthNET Admin Panel или на IP вашего сервера
+```bash
+sed -i 's/you_domain/stealthnet.yourdomain.com/g' /opt/remnawave-STEALTHNET-Panel/nginx/nginx.conf
+```
+
+## Запуск проекта
 
 ### Подготовка к запуску
 
 ```bash
 cd /opt/remnawave-STEALTHNET-Panel
+```
 
 # Создаем директорию instance для базы данных (если еще не создана)
+```bash
 mkdir -p instance
+```
 
 # База данных создается автоматически при первом запуске app.py
 # Дополнительные действия не требуются
-```
 
-### Собираем и запускаем контейнеры
+
+### Запускаем контейнеры
 
 #### Вариант 1: Использование скрипта (рекомендуется)
 
 ```bash
-# Делаем скрипт исполняемым
 chmod +x start.sh
-
-# Запускаем проект
 ./start.sh
 ```
 
@@ -389,58 +289,50 @@ chmod +x start.sh
 
 #### Вариант 2: Ручной запуск
 
-```bash
 # Собираем образы
+```bash
 docker compose build
+```
 
 # Запускаем все сервисы (база данных создастся автоматически при первом запуске)
+```bash
 docker compose up -d
+```
 
 # Проверяем статус
+```bash
 docker compose ps
+```
 
 # Смотрим логи
+```bash
 docker compose logs -f
 ```
 
 ### Проверяем работу сервисов
 
-```bash
 # Проверяем API
+```bash
 curl http://localhost:5000/api/public/health
+```
+# Должен вернуть: {"status": "ok"}
 
 # Проверяем логи API
+```bash
 docker compose logs api
+```
 
 # Проверяем логи бота
+```bash
 docker compose logs bot
+```
 
 # Проверяем логи Nginx
+```bash
 docker compose logs nginx
 ```
 
----
-
-## 8️⃣ Проверка работы
-
-### Проверка API
-
-```bash
-# Проверка здоровья API
-curl http://localhost:5000/api/public/health
-
-# Должен вернуть: {"status": "ok"}
-```
-
-### Проверка Nginx
-
-```bash
-# Проверка конфигурации Nginx
-docker compose exec nginx nginx -t
-
-# Перезагрузка Nginx
-docker compose exec nginx nginx -s reload
-```
+## Проверка работы
 
 ### Проверка бота
 
@@ -454,38 +346,63 @@ docker compose exec nginx nginx -s reload
 - `http://your-server-ip` или `https://your-domain`
 - Должна открыться страница входа
 
----
 
 ## 9️⃣ Управление проектом
 
 ### Полезные команды Docker Compose
-
+Перейдите в каталог проекта
 ```bash
+cd /opt/remnawave-STEALTHNET-Panel
+```
+
 # Запуск всех сервисов
+```bash
 docker compose up -d
+```
 
 # Остановка всех сервисов
+```bash
 docker compose down
+```
 
 # Перезапуск сервиса
+```bash
 docker compose restart api
+```
+```bash
 docker compose restart bot
+```
+```bash
 docker compose restart nginx
+```
 
 # Просмотр логов
+```bash
 docker compose logs -f api      # Логи API
-docker compose logs -f bot     # Логи бота
-docker compose logs -f nginx   # Логи Nginx
-docker compose logs -f         # Все логи
+```
+```bash
+docker compose logs -f bot      # Логи бота
+```
+```bash
+docker compose logs -f nginx    # Логи Nginx
+```
+```bash
+docker compose logs -f          # Все логи
+```
 
 # Остановка и удаление контейнеров
+```bash
 docker compose down
-
+```
 # Пересборка образов
+```bash
 docker compose build --no-cache
-
+```
 # Выполнение команд в контейнере
+```bash
 docker compose exec api bash
+```
+```bash
 docker compose exec bot bash
 ```
 
@@ -515,7 +432,8 @@ docker compose up -d
 ```bash
 # Создаем резервную копию
 docker compose exec api cp instance/stealthnet.db instance/stealthnet.db.backup_$(date +%Y%m%d_%H%M%S)
-
+```
+```bash
 # Или копируем из контейнера
 docker compose cp api:/app/instance/stealthnet.db ./backup_stealthnet_$(date +%Y%m%d_%H%M%S).db
 ```
@@ -542,69 +460,87 @@ docker compose config
 ```bash
 # Проверяем права на директорию instance
 ls -la instance/
+```
 
 # Создаем директорию вручную
+```bash
 mkdir -p instance
 chmod 755 instance
+```
 
 # База данных должна создаться автоматически при запуске контейнера
 # Если не создается, проверьте логи:
+```bash
 docker compose logs api
+```
 
 # Или создайте БД вручную через Python:
+```bash
 docker compose exec api python3 -c "from app import app, db, init_database; app.app_context().push(); init_database()"
 ```
 
 ### Проблема: Бот не отвечает
 
-```bash
 # Проверяем логи бота
+```bash
 docker compose logs bot
+```
 
 # Проверяем переменные окружения
+```bash
 docker compose exec bot env | grep CLIENT_BOT_TOKEN
+```
 
 # Проверяем подключение к API
+```bash
 docker compose exec bot curl http://api:5000/api/public/health
 ```
 
 ### Проблема: Nginx не проксирует запросы
 
-```bash
 # Проверяем конфигурацию Nginx
+```bash
 docker compose exec nginx nginx -t
+```
 
 # Проверяем логи Nginx
+```bash
 docker compose logs nginx
+```
 
 # Проверяем, что API доступен
+```bash
 docker compose exec nginx wget -O- http://api:5000/api/public/health
 ```
 
 ### Проблема: Frontend не отображается
 
-```bash
 # Проверяем, что файлы frontend скопированы
+```bash
 ls -la frontend/build/
+```
 
 # Проверяем права
+```bash
 chmod -R 755 frontend/build
+```
 
 # Проверяем конфигурацию Nginx
+```bash
 docker compose exec nginx cat /etc/nginx/conf.d/default.conf
 ```
 
 ### Проблема: Ошибки с переменными окружения
 
-```bash
 # Проверяем файл .env
+```bash
 cat .env
-
-# Проверяем, что .env загружается в контейнер
-docker compose exec api env | grep JWT_SECRET_KEY
 ```
 
----
+# Проверяем, что .env загружается в контейнер
+```bash
+docker compose exec api env | grep JWT_SECRET_KEY
+```
 
 ## 📝 Дополнительные настройки
 
@@ -797,4 +733,5 @@ docker compose logs -f
 ---
 
 **Удачной установки!** 🚀
+
 

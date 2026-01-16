@@ -379,7 +379,9 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 ---
 
+
 # Готово! StealthNET Admin Panel установлена и готова к работе.
+
 
 
 

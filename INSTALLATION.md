@@ -240,7 +240,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 ## Настройка Nginx
 
-Замените домен в конфигурационном файле Nginx:
+Замените stealthnet.yourdomain.com на ваш домен для реадктирования конфигурационного файла Nginx:
 ```bash
 sed -i 's/you_domain/stealthnet.yourdomain.com/g' nginx/nginx.conf
 ```
@@ -365,6 +365,7 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Настройте резервное копирование
 
 **Готово!** StealthNET Admin Panel установлен и готов к работе.
+
 
 
 

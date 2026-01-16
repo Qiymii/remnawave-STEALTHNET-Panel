@@ -377,8 +377,10 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - Для продакшена рекомендуется PostgreSQL
 - Регулярно обновляйте Docker-образы
 - Настройте резервное копирование
+---
 
-**Готово!** StealthNET Admin Panel установлен и готов к работе.
+# Готово! StealthNET Admin Panel установлен и готов к работе.
+
 
 
 
